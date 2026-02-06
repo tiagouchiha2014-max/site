@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salão Brasil -- Agende Online</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0f16;
+      --panel:#121926;
+      --text:#eef2ff;
+      --muted:#b9c2d6;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 18px 40px rgba(0,0,0,.45);
+      --gold1:#d4a04a;
+      --gold2:#a46c22;
+      --radius:18px;
+      --ok:#3ddc97;
+      --bad:#ff6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(212,160,74,.10), transparent 55%),
+        radial-gradient(900px 500px at 80% 20%, rgba(212,160,74,.08), transparent 55%),
+        var(--bg);
+      color:var(--text);
+    }
+    .container{max-width:1100px;margin:0 auto;padding:0 18px}
+
+    .hero{
+      position:relative;
+      min-height:420px;
+      display:flex;
+      align-items:center;
+      background:
+        url("https://images.unsplash.com/photo-1521498542256-5aeb47ba2e1f?auto=format&fit=crop&w=1600&q=60")
+        center/cover no-repeat;
+    }
+    .hero__overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(180deg, rgba(10,12,16,.55), rgba(10,12,16,.88));
+    }
+    .hero__content{position:relative;padding:34px 18px}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .brand__mark{
+      width:36px;height:36px;border-radius:999px;
+      display:grid;place-items:center;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+    }
+    .brand__name{
+      font-family:Cinzel, serif;
+      font-size:24px;
+      letter-spacing:.5px;
+    }
+    .brand__name span{color:var(--gold1)}
+    .hero h1{
+      font-family:Cinzel, serif;
+      margin:6px 0 10px;
+      font-size:42px;
+      line-height:1.05;
+      text-shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+    .subtitle{margin:0 0 18px;color:var(--muted);max-width:560px}
+
+    .steps{
+      display:flex;flex-wrap:wrap;gap:10px;
+      padding:12px;
+      background:rgba(0,0,0,.32);
+      border:1px solid var(--line);
+      border-radius:14px;
+      backdrop-filter: blur(8px);
+    }
+    .step{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      font-weight:600;
+    }
+    .step__num{
+      width:26px;height:26px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(212,160,74,.14);
+      border:1px solid rgba(212,160,74,.45);
+      color:var(--text);
+      font-weight:700;
+    }
+
+    main{padding:34px 0 10px}
+    .services h2{font-family:Cinzel, serif;font-size:28px;margin:0 0 6px}
+    .muted{margin:0 0 18px;color:var(--muted)}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+    .card{
+      text-align:left;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      padding:18px;
+      cursor:pointer;
+      min-height:130px;
+      box-shadow:0 12px 25px rgba(0,0,0,.28);
+      transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .card:hover{transform:translateY(-2px);border-color:rgba(212,160,74,.45)}
+    .card.is-selected{
+      border-color:rgba(212,160,74,.75);
+      background:linear-gradient(180deg, rgba(212,160,74,.18), rgba(255,255,255,.03));
+    }
+    .card__title{font-family:Cinzel, serif;font-size:20px;margin:0 0 6px}
+    .card__meta{color:var(--muted);font-weight:600}
+
+    .cta{
+      margin:26px 0 18px;
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:rgba(0,0,0,.22);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .cta__text{margin:0;color:var(--text);font-weight:600}
+
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn--gold{
+      border:none;
+      background:linear-gradient(180deg, var(--gold1), var(--gold2));
+      box-shadow:0 14px 30px rgba(0,0,0,.35);
+    }
+
+    .footer{
+      margin-top:20px;
+      border-top:1px solid var(--line);
+      background:rgba(0,0,0,.25);
+      padding:16px 0;
+    }
+    .footer__grid{
+      display:grid;
+      grid-template-columns:1.4fr 1fr 1fr;
+      gap:12px;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .footer__link{color:var(--muted);text-decoration:none}
+    .footer__link:hover{color:var(--text)}
+
+    .modal{position:fixed;inset:0;display:none}
+    .modal.is-open{display:block}
+    .modal__backdrop{
+      position:absolute;inset:0;
+      background:rgba(0,0,0,.62);
+      backdrop-filter: blur(6px);
+    }
+    .modal__panel{
+      position:relative;
+      width:min(760px, calc(100% - 24px));
+      margin:40px auto;
+      background:linear-gradient(180deg, rgba(18,25,38,.96), rgba(10,12,16,.98));
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modal__head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:16px;
+      border-bottom:1px solid var(--line);
+    }
+    .modal__head h3{margin:0;font-family:Cinzel, serif}
+    .icon-btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      width:38px;height:38px;border-radius:14px;
+      cursor:pointer;
+    }
+    .form{padding:16px}
+    .row{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .row.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{color:var(--muted);font-weight:700;font-size:13px}
+    input, select{
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      outline:none;
+    }
+
+    .info{
+      margin:10px 0 12px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      font-weight:800;
+    }
+
+    .summary{
+      margin:10px 0 16px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(212,160,74,.35);
+      background:rgba(212,160,74,.10);
+      color:var(--text);
+      font-weight:700;
+      min-height:22px;
+    }
+    .actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+    .hint{font-size:12px;color:var(--muted);margin-top:-4px}
+
+    .slots{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(0, 1fr));
+      gap:8px;
+      margin-top:6px;
+    }
+    .slot{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 10px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:800;
+      text-align:center;
+      user-select:none;
+    }
+    .slot:hover{border-color:rgba(212,160,74,.45)}
+    .slot.is-active{
+      border-color:rgba(212,160,74,.8);
+      background:rgba(212,160,74,.14);
+    }
+    .slot.is-disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      text-decoration:line-through;
+    }
+
+    @media (max-width: 900px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .hero h1{font-size:34px}
+      .footer__grid{grid-template-columns:1fr}
+      .slots{grid-template-columns:repeat(4, minmax(0, 1fr))}
+    }
+    @media (max-width: 520px){
+      .grid{grid-template-columns:1fr}
+      .cta{flex-direction:column;align-items:stretch}
+      .row.two{grid-template-columns:1fr}
+      .slots{grid-template-columns:repeat(3, minmax(0, 1fr))}
+    }
+  </style>
+</head>
+
+<body>
+  <header class="hero">
+    <div class="hero__overlay"></div>
+    <div class="container hero__content">
+      <div class="brand">
+        <div class="brand__mark">✂︎</div>
+        <div class="brand__name">Salão <span>Brasil</span></div>
+      </div>
+
+      <h1>Agende seu Horário Online</h1>
+      <p class="subtitle">Escolha seu serviço e marque sua visita com facilidade (pagamento presencial). Horários são bloqueados automaticamente.</p>
+
+      <div class="steps" role="list" aria-label="Etapas do agendamento">
+        <div class="step" role="listitem"><span class="step__num">1</span> Escolha o Serviço</div>
+        <div class="step" role="listitem"><span class="step__num">2</span> Escolha o Barbeiro</div>
+        <div class="step" role="listitem"><span class="step__num">3</span> Escolha Data e Hora</div>
+        <div class="step" role="listitem"><span class="step__num">4</span> Confirme no WhatsApp</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="services">
+      <h2>Serviços</h2>
+      <p class="muted">Toque em um serviço para começar.</p>
+
+      <div class="grid">
+        <button class="card" data-service="Corte de Cabelo" data-duration="30" type="button">
+          <div class="card__title">Corte de Cabelo</div>
+          <div class="card__meta">30 Minutos</div>
+        </button>
+
+        <button class="card" data-service="Barba" data-duration="30" type="button">
+          <div class="card__title">Barba</div>
+          <div class="card__meta">30 Minutos</div>
+        </button>
+
+        <button class="card" data-service="Corte + Barba" data-duration="60" type="button">
+          <div class="card__title">Corte + Barba</div>
+          <div class="card__meta">60 Minutos</div>
+        </button>
+
+        <button class="card" data-service="Sobrancelha" data-duration="30" type="button">
+          <div class="card__title">Sobrancelha</div>
+          <div class="card__meta">30 Minutos</div>
+        </button>
+      </div>
+
+      <div class="cta">
+        <p class="cta__text">Garanta já o seu horário!</p>
+        <button id="openBooking" class="btn btn--gold" type="button">Agendar Agora</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__item">📍 Próximo ao Hotel Pérola</div>
+      <div class="footer__item">🕘 Seg - Sáb | 08:00 - 20:00</div>
+      <a class="footer__item footer__link" id="waLink" href="#" target="_blank" rel="noreferrer">💬 WhatsApp: (99) 99136-0547</a>
+    </div>
+  </footer>
+
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" data-close="true"></div>
+
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__head">
+        <h3 id="modalTitle">Agendamento -- Salão Brasil</h3>
+        <button class="icon-btn" data-close="true" aria-label="Fechar">✕</button>
+      </div>
+
+      <form id="bookingForm" class="form">
+        <div class="info">
+          <div>🔒 Horários ocupados ficam indisponíveis</div>
+          <div class="badge" id="cloudState">Nuvem: --</div>
+        </div>
+
+        <div class="row">
+          <label>Serviço</label>
+          <select id="serviceSelect" required></select>
+          <div class="hint">Intervalos fixos de 30 minutos.</div>
+        </div>
+
+        <div class="row">
+          <label>Barbeiro</label>
+          <select id="barberSelect" required></select>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label>Data</label>
+            <input id="dateInput" type="date" required />
+          </div>
+          <div>
+            <label>Hora</label>
+            <select id="timeSelect" required></select>
+            <div class="hint" id="timeHint">--</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Seleção rápida de horários</label>
+          <div id="slotGrid" class="slots" aria-label="Horários disponíveis"></div>
+        </div>
+
+        <div class="row">
+          <label>Seu nome</label>
+          <input id="nameInput" type="text" placeholder="Ex.: Tiago" required />
+        </div>
+
+        <div class="row">
+          <label>Telefone (opcional)</label>
+          <input id="phoneInput" type="tel" placeholder="(99) 9xxxx-xxxx" />
+        </div>
+
+        <div class="summary" id="summary"></div>
+
+        <div class="actions">
+          <button type="button" class="btn" data-close="true">Cancelar</button>
+          <button type="submit" class="btn btn--gold" id="submitBtn">Reservar e confirmar no WhatsApp</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    /***********************
+     *  CONFIG (JÁ AJUSTADO)
+     ***********************/
+    const SHOP_NAME = "Salão Brasil";
+    const BARBERS = ["Seu Zé", "Tarcísio"];
+
+    // Horário de funcionamento
+    const OPEN_HOUR = 8;     // 08:00
+    const CLOSE_HOUR = 20;   // 20:00 (último slot começa 19:30)
+    const SLOT_MINUTES = 30;
+
+    // WhatsApp (E.164 sem "+")
+    const WHATSAPP_E164 = "5599991360547";
+    const DISPLAY_WHATSAPP = "(99) 99136-0547";
+
+    // Timezone fixa (Fortaleza = -03:00)
+    const TZ_OFFSET = "-03:00";
+
+    /***********************
+     *  SUPABASE (COLOQUE OS SEUS DADOS AQUI)
+     ***********************/
+    const SUPABASE_URL = "https://iwlrfrecmwvletocblsz.supabase.coUR";
+    const SUPABASE_ANON_KEY = "sb_publishable_XOr5tMs5O3ormucfpadjbA_aLFQTNtu";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const SERVICES = [
+      { name: "Corte de Cabelo", duration: 30 },
+      { name: "Barba", duration: 30 },
+      { name: "Corte + Barba", duration: 60 },
+      { name: "Sobrancelha", duration: 30 },
+    ];
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+    const pad2 = (n) => String(n).padStart(2, "0");
+
+    const modal = $("#modal");
+    const openBookingBtn = $("#openBooking");
+    const bookingForm = $("#bookingForm");
+
+    const serviceSelect = $("#serviceSelect");
+    const barberSelect = $("#barberSelect");
+    const dateInput = $("#dateInput");
+    const timeSelect = $("#timeSelect");
+    const slotGrid = $("#slotGrid");
+
+    const nameInput = $("#nameInput");
+    const phoneInput = $("#phoneInput");
+    const summary = $("#summary");
+    const submitBtn = $("#submitBtn");
+
+    const waLink = $("#waLink");
+    waLink.textContent = `💬 WhatsApp: ${DISPLAY_WHATSAPP}`;
+    waLink.href = `https://wa.me/${WHATSAPP_E164}`;
+
+    const cloudState = $("#cloudState");
+    const timeHint = $("#timeHint");
+
+    let selectedService = SERVICES[0].name;
+
+    // Cache de horários ocupados (para data + barbeiro)
+    let occupiedSet = new Set(); // chave = barber|start_ts
+
+    function buildTimeSlots(){
+      const slots = [];
+      for(let h = OPEN_HOUR; h < CLOSE_HOUR; h++){
+        for(let m = 0; m < 60; m += SLOT_MINUTES){
+          // último slot do dia deve começar antes do CLOSE_HOUR
+          if(h === CLOSE_HOUR) continue;
+          slots.push(`${pad2(h)}:${pad2(m)}`);
+        }
+      }
+      // remove slots >= CLOSE_HOUR (segurança)
+      return slots.filter(t => {
+        const [hh, mm] = t.split(":").map(Number);
+        return (hh < CLOSE_HOUR) && !(hh === CLOSE_HOUR && mm > 0);
+      });
+    }
+
+    function setMinDateToday(){
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = pad2(today.getMonth() + 1);
+      const dd = pad2(today.getDate());
+      const min = `${yyyy}-${mm}-${dd}`;
+      dateInput.min = min;
+      if(!dateInput.value) dateInput.value = min;
+    }
+
+    function fillSelects(){
+      serviceSelect.innerHTML = SERVICES.map(s =>
+        `<option value="${s.name}">${s.name} -- ${s.duration} min</option>`
+      ).join("");
+
+      barberSelect.innerHTML = BARBERS.map(b => `<option value="${b}">${b}</option>`).join("");
+
+      const slots = buildTimeSlots();
+      timeSelect.innerHTML = slots.map(t => `<option value="${t}">${t}</option>`).join("");
+
+      serviceSelect.value = selectedService;
+    }
+
+    function openModal(){
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      refreshOccupied().then(()=>{
+        renderSlotGrid();
+        updateSummary();
+      });
+    }
+    function closeModal(){
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    function setServiceFromCard(name){
+      selectedService = name;
+      $$(".card").forEach(c => c.classList.toggle("is-selected", c.dataset.service === name));
+      serviceSelect.value = name;
+      updateSummary();
+    }
+
+    function toStartTs(dateStr, timeStr){
+      // dateStr = "YYYY-MM-DD", timeStr = "HH:MM"
+      // força Fortaleza (-03:00) para não depender do aparelho
+      const iso = `${dateStr}T${timeStr}:00${TZ_OFFSET}`;
+      const d = new Date(iso);
+      return d.getTime();
+    }
+
+    function key(barber, startTs){
+      return `${barber}|${startTs}`;
+    }
+
+    async function refreshOccupied(){
+      cloudState.textContent = "Nuvem: carregando...";
+      occupiedSet = new Set();
+      try{
+        const barber = barberSelect.value;
+        const date = dateInput.value;
+
+        // range do dia (Fortaleza)
+        const dayStart = toStartTs(date, "00:00");
+        const dayEnd = toStartTs(date, "23:59") + 60 * 1000; // +1min para incluir 23:59
+
+        // Busca apenas horários ocupados (view pública)
+        const { data, error } = await sb
+          .from("booked_slots")
+          .select("barber,start_ts")
+          .eq("barber", barber)
+          .gte("start_ts", dayStart)
+          .lt("start_ts", dayEnd);
+
+        if(error) throw error;
+
+        (data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
+        cloudState.textContent = "Nuvem: ok";
+      }catch(e){
+        console.log(e);
+        cloudState.textContent = "Nuvem: erro";
+      }
+    }
+
+    function isDisabledSlot(barber, dateStr, timeStr){
+      const startTs = toStartTs(dateStr, timeStr);
+      return occupiedSet.has(key(barber, startTs));
+    }
+
+    function updateSummary(){
+      const service = serviceSelect.value;
+      const duration = (SERVICES.find(s => s.name === service)?.duration) ?? "";
+      const barber = barberSelect.value || "--";
+      const date = dateInput.value || "--";
+      const time = timeSelect.value || "--";
+
+      const disabled = (date !== "--" && time !== "--") ? isDisabledSlot(barber, date, time) : false;
+      timeHint.textContent = disabled ? "⚠️ Esse horário está ocupado" : "✅ Horário disponível";
+
+      summary.textContent = `Serviço: ${service} (${duration}min) • Barbeiro: ${barber} • ${date} às ${time}`;
+    }
+
+    function renderSlotGrid(){
+      const slots = buildTimeSlots();
+      const current = timeSelect.value;
+      const barber = barberSelect.value;
+      const date = dateInput.value;
+
+      slotGrid.innerHTML = slots.map(t => {
+        const disabled = isDisabledSlot(barber, date, t);
+        const active = t === current ? "is-active" : "";
+        const dis = disabled ? "is-disabled" : "";
+        const aria = disabled ? `aria-disabled="true"` : "";
+        return `<div class="slot ${active} ${dis}" data-time="${t}" role="button" tabindex="0" ${aria}>${t}</div>`;
+      }).join("");
+
+      $$(".slot").forEach(el => {
+        el.addEventListener("click", () => {
+          if(el.classList.contains("is-disabled")) return;
+          timeSelect.value = el.dataset.time;
+          renderSlotGrid();
+          updateSummary();
+        });
+        el.addEventListener("keydown", (e) => {
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            if(el.classList.contains("is-disabled")) return;
+            timeSelect.value = el.dataset.time;
+            renderSlotGrid();
+            updateSummary();
+          }
+        });
+      });
+
+      // Se o horário selecionado ficou ocupado, tenta ir pro próximo disponível
+      if(isDisabledSlot(barber, date, timeSelect.value)){
+        const firstFree = slots.find(t => !isDisabledSlot(barber, date, t));
+        if(firstFree){
+          timeSelect.value = firstFree;
+        }
+      }
+      updateSummary();
+    }
+
+    async function reserveSlotOrFail(payload){
+      // Insere na tabela appointments; se já existir, a UNIQUE INDEX bloqueia.
+      const { error } = await sb.from("appointments").insert(payload);
+      if(error) throw error;
+      return true;
+    }
+
+    $$(".card").forEach(card => {
+      card.addEventListener("click", () => {
+        setServiceFromCard(card.dataset.service);
+        openModal();
+      });
+    });
+
+    openBookingBtn.addEventListener("click", openModal);
+
+    modal.addEventListener("click", (e) => {
+      if(e.target?.dataset?.close === "true") closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+    });
+
+    [serviceSelect, barberSelect, dateInput, timeSelect].forEach(el => {
+      el.addEventListener("change", async () => {
+        if(el === barberSelect || el === dateInput){
+          await refreshOccupied();
+          renderSlotGrid();
+          return;
+        }
+        if(el === timeSelect) renderSlotGrid();
+        updateSummary();
+      });
+    });
+
+    bookingForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const customer = nameInput.value.trim();
+      if(!customer) { alert("Informe seu nome."); return; }
+
+      const phone = phoneInput.value.trim();
+      const service = serviceSelect.value;
+      const duration = (SERVICES.find(s => s.name === service)?.duration) ?? 30;
+      const barber = barberSelect.value;
+      const date = dateInput.value;
+      const time = timeSelect.value;
+
+      // Bloqueio no front (UX)
+      if(isDisabledSlot(barber, date, time)){
+        alert("Esse horário já foi reservado. Escolha outro.");
+        await refreshOccupied();
+        renderSlotGrid();
+        return;
+      }
+
+      const startTs = toStartTs(date, time);
+
+      // Desabilita botão para evitar duplo clique
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Reservando...";
+
+      try{
+        // 1) Reserva na nuvem (bloqueio real pela UNIQUE constraint)
+        await reserveSlotOrFail({
+          barber,
+          service,
+          duration_min: duration,
+          start_ts: startTs,
+          customer_name: customer,
+          customer_phone: phone || null
+        });
+
+        // 2) Atualiza ocupados e UI
+        await refreshOccupied();
+        renderSlotGrid();
+
+        // 3) Abre WhatsApp para confirmar
+        const msg =
+`Olá! Quero agendar no ${SHOP_NAME} (pagamento presencial).
+• Nome: ${customer}
+• Serviço: ${service} (${duration} min)
+• Barbeiro: ${barber}
+• Data/Hora: ${date} às ${time}
+${phone ? `• Telefone: ${phone}` : ""}`.trim();
+
+        const url = `https://wa.me/${WHATSAPP_E164}?text=${encodeURIComponent(msg)}`;
+        window.open(url, "_blank", "noreferrer");
+
+        alert("Horário reservado ✅ Agora confirme no WhatsApp.");
+        closeModal();
+      }catch(err){
+        // Se for conflito de UNIQUE, Supabase geralmente retorna erro 23505 (Postgres unique_violation)
+        console.log(err);
+        alert("Não deu para reservar (provavelmente alguém pegou esse horário agora). Escolha outro.");
+        await refreshOccupied();
+        renderSlotGrid();
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Reservar e confirmar no WhatsApp";
+      }
+    });
+
+    // INIT
+    fillSelects();
+    setMinDateToday();
+    setServiceFromCard(selectedService);
+    updateSummary();
+  </script>
+</body>
+</html>
