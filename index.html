@@ -733,12 +733,12 @@ ${phone ? `• Telefone: ${phone}` : ""}`.trim();
 
         alert("Horário reservado ✅ Agora confirme no WhatsApp.");
         closeModal();
-      }catch(err){
-        // Se for conflito de UNIQUE, Supabase geralmente retorna erro 23505 (Postgres unique_violation)
-        console.log(err);
-        alert("Não deu para reservar (provavelmente alguém pegou esse horário agora). Escolha outro.");
-        await refreshOccupied();
-        renderSlotGrid();
+      } catch (err) {
+  console.log("SUPABASE INSERT ERROR:", err);
+  alert("Erro ao reservar: " + (err?.message || JSON.stringify(err)));
+  await refreshOccupied();
+  renderSlotGrid();
+}
       } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "Reservar e confirmar no WhatsApp";
