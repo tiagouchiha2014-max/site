@@ -554,10 +554,13 @@
       return `${barber}|${startTs}`;
     }
 
-    async function refreshOccupied(){
-      cloudState.textContent = "Nuvem: carregando...";
-      occupiedSet = new Set();
-      try{
+ async function reserveSlotOrFail(payload) {
+  const { error } = await sb
+    .from("appointments")
+    .insert(payload);
+
+  if (error) throw error;
+}
         const barber = barberSelect.value;
         const date = dateInput.value;
 
@@ -703,8 +706,14 @@
       const startTs = toStartTs(date, time);
 
       // Desabilita botão para evitar duplo clique
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Reservando...";
+      await reserveSlotOrFail({
+  barber,
+  service,
+  duration_min: duration,
+  start_ts: startTs,
+  customer_name: customer,
+  customer_phone: phone || null
+});
 
       try{
         // 1) Reserva na nuvem (bloqueio real pela UNIQUE constraint)
