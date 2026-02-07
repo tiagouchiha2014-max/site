@@ -554,13 +554,10 @@
       return `${barber}|${startTs}`;
     }
 
- async function reserveSlotOrFail(payload) {
-  const { error } = await sb
-    .from("appointments")
-    .insert(payload);
-
-  if (error) throw error;
-}
+    async function refreshOccupied(){
+      cloudState.textContent = "Nuvem: carregando...";
+      occupiedSet = new Set();
+      try{
         const barber = barberSelect.value;
         const date = dateInput.value;
 
@@ -682,49 +679,50 @@
       });
     });
 
-    <script>
-bookingForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    bookingForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  const customer = nameInput.value.trim();
-  if (!customer) {
-    alert("Informe seu nome.");
-    return;
-  }
+      const customer = nameInput.value.trim();
+      if(!customer) { alert("Informe seu nome."); return; }
 
-  const phone = phoneInput.value.trim();
-  const service = serviceSelect.value;
-  const duration = (SERVICES.find(s => s.name === service)?.duration) ?? 30;
-  const barber = barberSelect.value;
-  const date = dateInput.value;
-  const time = timeSelect.value;
+      const phone = phoneInput.value.trim();
+      const service = serviceSelect.value;
+      const duration = (SERVICES.find(s => s.name === service)?.duration) ?? 30;
+      const barber = barberSelect.value;
+      const date = dateInput.value;
+      const time = timeSelect.value;
 
-  if (isDisabledSlot(barber, date, time)) {
-    alert("Esse horário já foi reservado. Escolha outro.");
-    await refreshOccupied();
-    renderSlotGrid();
-    return;
-  }
+      // Bloqueio no front (UX)
+      if(isDisabledSlot(barber, date, time)){
+        alert("Esse horário já foi reservado. Escolha outro.");
+        await refreshOccupied();
+        renderSlotGrid();
+        return;
+      }
 
-  const startTs = toStartTs(date, time);
+      const startTs = toStartTs(date, time);
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Reservando...";
+      // Desabilita botão para evitar duplo clique
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Reservando...";
 
-  try {
-    await reserveSlotOrFail({
-      barber,
-      service,
-      duration_min: duration,
-      start_ts: startTs,
-      customer_name: customer,
-      customer_phone: phone || null
-    });
+      try{
+        // 1) Reserva na nuvem (bloqueio real pela UNIQUE constraint)
+        await reserveSlotOrFail({
+          barber,
+          service,
+          duration_min: duration,
+          start_ts: startTs,
+          customer_name: customer,
+          customer_phone: phone || null
+        });
 
-    await refreshOccupied();
-    renderSlotGrid();
+        // 2) Atualiza ocupados e UI
+        await refreshOccupied();
+        renderSlotGrid();
 
-    const msg =
+        // 3) Abre WhatsApp para confirmar
+        const msg =
 `Olá! Quero agendar no ${SHOP_NAME} (pagamento presencial).
 • Nome: ${customer}
 • Serviço: ${service} (${duration} min)
@@ -732,28 +730,22 @@ bookingForm.addEventListener("submit", async (e) => {
 • Data/Hora: ${date} às ${time}
 ${phone ? `• Telefone: ${phone}` : ""}`.trim();
 
-    const url = `https://wa.me/${WHATSAPP_E164}?text=${encodeURIComponent(msg)}`;
-    window.open(url, "_blank", "noreferrer");
+        const url = `https://wa.me/${WHATSAPP_E164}?text=${encodeURIComponent(msg)}`;
+        window.open(url, "_blank", "noreferrer");
 
-    alert("Horário reservado ✅ Agora confirme no WhatsApp.");
-    closeModal();
-
-  } catch (err) {
-    console.error("SUPABASE INSERT ERROR:", err);
-
-    let msg = "Erro ao reservar.";
-    if (err?.message) msg += " " + err.message;
-    alert(msg);
-
-    await refreshOccupied();
-    renderSlotGrid();
-
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Reservar e confirmar no WhatsApp";
-  }
-});
-</script>
+        alert("Horário reservado ✅ Agora confirme no WhatsApp.");
+        closeModal();
+      }catch(err){
+        // Se for conflito de UNIQUE, Supabase geralmente retorna erro 23505 (Postgres unique_violation)
+        console.log(err);
+        alert("Não deu para reservar (provavelmente alguém pegou esse horário agora). Escolha outro.");
+        await refreshOccupied();
+        renderSlotGrid();
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Reservar e confirmar no WhatsApp";
+      }
+    });
 
     // INIT
     fillSelects();
