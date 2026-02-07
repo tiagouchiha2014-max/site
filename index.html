@@ -644,11 +644,9 @@
     }
 
     async function reserveSlotOrFail(payload){
-      // Insere na tabela appointments; se já existir, a UNIQUE INDEX bloqueia.
-      const { error } = await sb.from("appointments").insert(payload);
-      if(error) throw error;
-      return true;
-    }
+  const { error } = await sb.from("booked_slots").insert(payload);
+  if (error) throw error;
+}
 
     $$(".card").forEach(card => {
       card.addEventListener("click", () => {
