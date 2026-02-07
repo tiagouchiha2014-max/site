@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Salão Brasil -- Agende Online</title>
+  <title>Salão Brasil — Agende Online</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,11 @@
       --radius:18px;
       --ok:#3ddc97;
       --bad:#ff6b6b;
+
+      /* ✅ Destaque (cor da fonte dos serviços) */
+      --service-accent:#ffd27a;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -121,7 +125,9 @@
       border-color:rgba(212,160,74,.75);
       background:linear-gradient(180deg, rgba(212,160,74,.18), rgba(255,255,255,.03));
     }
-    .card__title{font-family:Cinzel, serif;font-size:20px;margin:0 0 6px}
+
+    /* ✅ Fonte dos serviços em destaque */
+    .card__title{font-family:Cinzel, serif;font-size:20px;margin:0 0 6px;color:var(--service-accent)}
     .card__meta{color:var(--muted);font-weight:600}
 
     .cta{
@@ -358,7 +364,7 @@
 
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal__head">
-        <h3 id="modalTitle">Agendamento -- Salão Brasil</h3>
+        <h3 id="modalTitle">Agendamento — Salão Brasil</h3>
         <button class="icon-btn" data-close="true" aria-label="Fechar">✕</button>
       </div>
 
@@ -421,28 +427,26 @@
 
   <script>
     /***********************
-     *  CONFIG (JÁ AJUSTADO)
+     *  CONFIG DO SALÃO
      ***********************/
     const SHOP_NAME = "Salão Brasil";
     const BARBERS = ["Seu Zé", "Tarcísio"];
-
-    // Horário de funcionamento
-    const OPEN_HOUR = 8;     // 08:00
-    const CLOSE_HOUR = 20;   // 20:00 (último slot começa 19:30)
+    const OPEN_HOUR = 8;
+    const CLOSE_HOUR = 20;
     const SLOT_MINUTES = 30;
-
-    // WhatsApp (E.164 sem "+")
     const WHATSAPP_E164 = "5599991360547";
     const DISPLAY_WHATSAPP = "(99) 99136-0547";
-
-    // Timezone fixa (Fortaleza = -03:00)
     const TZ_OFFSET = "-03:00";
 
     /***********************
-     *  SUPABASE (COLOQUE OS SEUS DADOS AQUI)
+     * ✅ ÚNICAS CONFIGURAÇÕES DO SUPABASE (EDITE AQUI)
+     *  - A tabela usada é: booked_slots
+     *  - Colunas esperadas nela: barber (text), start_ts (int8)
      ***********************/
-    const SUPABASE_URL = "https://iwlrfrecmwvletocblsz.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_XOr5tMs5O3ormucfpadjbA_aLFQTNtu";
+    const SUPABASE_URL ="https://iwlrfrecmwvletocblsz.supabase.co"; ";
+    const SUPABASE_ANON_KEY ="sb_publishable_XOr5tMs5O3ormucfpadjbA_aLFQTNtu";
+    const SUPABASE_TABLE = "booked_slots";
+
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const SERVICES = [
@@ -479,24 +483,16 @@
     const timeHint = $("#timeHint");
 
     let selectedService = SERVICES[0].name;
-
-    // Cache de horários ocupados (para data + barbeiro)
     let occupiedSet = new Set(); // chave = barber|start_ts
 
     function buildTimeSlots(){
       const slots = [];
       for(let h = OPEN_HOUR; h < CLOSE_HOUR; h++){
         for(let m = 0; m < 60; m += SLOT_MINUTES){
-          // último slot do dia deve começar antes do CLOSE_HOUR
-          if(h === CLOSE_HOUR) continue;
           slots.push(`${pad2(h)}:${pad2(m)}`);
         }
       }
-      // remove slots >= CLOSE_HOUR (segurança)
-      return slots.filter(t => {
-        const [hh, mm] = t.split(":").map(Number);
-        return (hh < CLOSE_HOUR) && !(hh === CLOSE_HOUR && mm > 0);
-      });
+      return slots;
     }
 
     function setMinDateToday(){
@@ -511,7 +507,7 @@
 
     function fillSelects(){
       serviceSelect.innerHTML = SERVICES.map(s =>
-        `<option value="${s.name}">${s.name} -- ${s.duration} min</option>`
+        `<option value="${s.name}">${s.name} — ${s.duration} min</option>`
       ).join("");
 
       barberSelect.innerHTML = BARBERS.map(b => `<option value="${b}">${b}</option>`).join("");
@@ -543,13 +539,10 @@
     }
 
     function toStartTs(dateStr, timeStr){
-      // dateStr = "YYYY-MM-DD", timeStr = "HH:MM"
-      // força Fortaleza (-03:00) para não depender do aparelho
       const iso = `${dateStr}T${timeStr}:00${TZ_OFFSET}`;
       const d = new Date(iso);
       return d.getTime();
     }
-
     function key(barber, startTs){
       return `${barber}|${startTs}`;
     }
@@ -561,13 +554,11 @@
         const barber = barberSelect.value;
         const date = dateInput.value;
 
-        // range do dia (Fortaleza)
         const dayStart = toStartTs(date, "00:00");
-        const dayEnd = toStartTs(date, "23:59") + 60 * 1000; // +1min para incluir 23:59
+        const dayEnd = toStartTs(date, "23:59") + 60 * 1000;
 
-        // Busca apenas horários ocupados (view pública)
         const { data, error } = await sb
-          .from("booked_slots")
+          .from(SUPABASE_TABLE)
           .select("barber,start_ts")
           .eq("barber", barber)
           .gte("start_ts", dayStart)
@@ -578,7 +569,7 @@
         (data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
         cloudState.textContent = "Nuvem: ok";
       }catch(e){
-        console.log(e);
+        console.log("SUPABASE SELECT ERROR:", e);
         cloudState.textContent = "Nuvem: erro";
       }
     }
@@ -633,20 +624,18 @@
         });
       });
 
-      // Se o horário selecionado ficou ocupado, tenta ir pro próximo disponível
       if(isDisabledSlot(barber, date, timeSelect.value)){
         const firstFree = slots.find(t => !isDisabledSlot(barber, date, t));
-        if(firstFree){
-          timeSelect.value = firstFree;
-        }
+        if(firstFree) timeSelect.value = firstFree;
       }
       updateSummary();
     }
 
-    async function reserveSlotOrFail(payload){
-  const { error } = await sb.from("booked_slots").insert(payload);
-  if (error) throw error;
-}
+    /* ✅ INSERT correto: só 2 colunas que existem na tabela */
+    async function reserveSlotOrFail({ barber, start_ts }){
+      const { error } = await sb.from(SUPABASE_TABLE).insert([{ barber, start_ts }]);
+      if(error) throw error;
+    }
 
     $$(".card").forEach(card => {
       card.addEventListener("click", () => {
@@ -677,7 +666,7 @@
       });
     });
 
-   bookingForm.addEventListener("submit", async (e) => {
+    bookingForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const customer = nameInput.value.trim();
@@ -690,7 +679,6 @@
       const date = dateInput.value;
       const time = timeSelect.value;
 
-      // Bloqueio no front (UX)
       if(isDisabledSlot(barber, date, time)){
         alert("Esse horário já foi reservado. Escolha outro.");
         await refreshOccupied();
@@ -700,26 +688,15 @@
 
       const startTs = toStartTs(date, time);
 
-      // Desabilita botão para evitar duplo clique
       submitBtn.disabled = true;
       submitBtn.textContent = "Reservando...";
 
       try{
-        // 1) Reserva na nuvem (bloqueio real pela UNIQUE constraint)
-        await reserveSlotOrFail({
-          barber,
-          service,
-          duration_min: duration,
-          start_ts: startTs,
-          customer_name: customer,
-          customer_phone: phone || null
-        });
+        await reserveSlotOrFail({ barber, start_ts: startTs });
 
-        // 2) Atualiza ocupados e UI
         await refreshOccupied();
         renderSlotGrid();
 
-        // 3) Abre WhatsApp para confirmar
         const msg =
 `Olá! Quero agendar no ${SHOP_NAME} (pagamento presencial).
 • Nome: ${customer}
@@ -734,27 +711,23 @@ ${phone ? `• Telefone: ${phone}` : ""}`.trim();
         alert("Horário reservado ✅ Agora confirme no WhatsApp.");
         closeModal();
       } catch (err) {
-  console.log("SUPABASE INSERT ERROR:", err);
+        console.log("SUPABASE INSERT ERROR:", err);
 
-  var msg = "Erro ao reservar.";
-  if (err && err.message) {
-    msg += " " + err.message;
-  } else {
-    try { msg += " " + JSON.stringify(err); } catch (e) {}
-  }
+        let msg = "Erro ao reservar.";
+        if (err?.message) msg += " " + err.message;
+        else {
+          try { msg += " " + JSON.stringify(err); } catch(e){}
+        }
+        alert(msg);
 
-  alert(msg);
-
-  try { await refreshOccupied(); } catch (e) {}
-  try { renderSlotGrid(); } catch (e) {}
-}
-      
+        try { await refreshOccupied(); } catch(e){}
+        try { renderSlotGrid(); } catch(e){}
       } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Reservar e confirmar no WhatsApp";
-  }
-   });
-      
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Reservar e confirmar no WhatsApp";
+      }
+    });
+
     // INIT
     fillSelects();
     setMinDateToday();
