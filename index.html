@@ -677,7 +677,7 @@
       });
     });
 
-    bookingForm.addEventListener("submit", async (e) => {
+   bookingForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const customer = nameInput.value.trim();
@@ -740,11 +740,11 @@ ${phone ? `• Telefone: ${phone}` : ""}`.trim();
         await refreshOccupied();
         renderSlotGrid();
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Reservar e confirmar no WhatsApp";
-      }
-    });
-
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Reservar e confirmar no WhatsApp";
+  }
+   });
+      
     // INIT
     fillSelects();
     setMinDateToday();
