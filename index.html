@@ -735,10 +735,20 @@ ${phone ? `• Telefone: ${phone}` : ""}`.trim();
         closeModal();
       } catch (err) {
   console.log("SUPABASE INSERT ERROR:", err);
-  alert("Erro ao reservar: " + (err?.message || JSON.stringify(err)));
-  await refreshOccupied();
-  renderSlotGrid();
+
+  var msg = "Erro ao reservar.";
+  if (err && err.message) {
+    msg += " " + err.message;
+  } else {
+    try { msg += " " + JSON.stringify(err); } catch (e) {}
+  }
+
+  alert(msg);
+
+  try { await refreshOccupied(); } catch (e) {}
+  try { renderSlotGrid(); } catch (e) {}
 }
+      
       } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "Reservar e confirmar no WhatsApp";
