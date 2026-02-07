@@ -1,4 +1,4 @@
-<!doctype html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -287,7 +287,94 @@
       .row.two{grid-template-columns:1fr}
       .slots{grid-template-columns:repeat(3, minmax(0, 1fr))}
     }
-  </style>
+
+/* =========================
+   POLIMENTO VISUAL (Premium)
+   (injetado automaticamente)
+   ========================= */
+
+:root{
+  --gold-strong:#ffd36a;
+  --gold-soft:#ffdf93;
+  --gold-glow:rgba(255, 211, 106, .35);
+  --gold-glow2:rgba(212, 160, 74, .28);
+}
+
+/* Hero um pouco mais “luxo” */
+.hero h1{ letter-spacing:.3px; }
+
+/* ====== SERVIÇOS: dourado forte e brilhante ====== */
+.services h2,
+.services .muted{
+  color: var(--gold-strong);
+  text-shadow: 0 0 10px var(--gold-glow), 0 0 18px var(--gold-glow2);
+}
+
+/* Cards mais premium */
+.card{
+  border-color: rgba(255,255,255,.14);
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+  box-shadow: 0 16px 40px rgba(0,0,0,.35);
+}
+
+.card__title{
+  color: var(--gold-strong);
+  text-shadow: 0 0 10px var(--gold-glow), 0 0 18px var(--gold-glow2), 0 10px 22px rgba(0,0,0,.45);
+}
+
+.card__meta{
+  color: rgba(255, 223, 147, .92);
+}
+
+/* Hover mais bonito */
+.card:hover{
+  transform: translateY(-3px);
+  border-color: rgba(255, 211, 106, .55);
+  background: linear-gradient(180deg, rgba(255, 211, 106, .12), rgba(255,255,255,.03));
+}
+
+/* Selecionado com “borda ouro” */
+.card.is-selected{
+  border-color: rgba(255, 211, 106, .85);
+  box-shadow: 0 0 0 1px rgba(255, 211, 106, .25), 0 18px 50px rgba(0,0,0,.45);
+}
+
+/* CTA mais destacado */
+.cta{
+  background: linear-gradient(180deg, rgba(255, 211, 106, .10), rgba(0,0,0,.20));
+  border-color: rgba(255, 211, 106, .22);
+}
+
+/* Botão gold com brilho suave e hover */
+.btn--gold{ position:relative; overflow:hidden; }
+.btn--gold::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%);
+  transform: rotate(18deg);
+  opacity:.35;
+  pointer-events:none;
+}
+.btn--gold:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+/* Modal mais clean */
+.modal__panel{ border-color: rgba(255,255,255,.14); }
+.modal__head{ background: rgba(255,255,255,.03); }
+.summary{
+  border-color: rgba(255, 211, 106, .45);
+  background: rgba(255, 211, 106, .12);
+}
+
+/* Slots mais bonitos */
+.slot{ border-color: rgba(255,255,255,.14); }
+.slot:hover{ border-color: rgba(255, 211, 106, .55); }
+.slot.is-active{
+  border-color: rgba(255, 211, 106, .95);
+  background: rgba(255, 211, 106, .16);
+  box-shadow: 0 0 0 1px rgba(255, 211, 106, .20);
+}
+</style>
 </head>
 
 <body>
