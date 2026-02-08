@@ -822,14 +822,40 @@
           .gte("start_ts", dayStart)
           .lt("start_ts", dayEnd);
 
-        // 2) fallback: se não funcionar, tenta booked_slots (se você ainda usa a view pública)
-        if(res?.error){
-          res = await sb
-            .from("booked_slots")
-            .select("barber,start_ts")
-            .eq("barber", barber)
-            .gte("start_ts", dayStart)
-            .lt("start_ts", dayEnd);
+        async function refreshOccupied(){
+  cloudState.textContent = "Nuvem: carregando...";
+  occupiedSet = new Set();
+
+  try{
+    if(!currentUser){
+      cloudState.textContent = "Nuvem: faça login";
+      return;
+    }
+
+    const barber = barberSelect.value;
+    const date = dateInput.value;
+
+    const dayStart = toStartTs(date, "00:00");
+    const dayEnd = toStartTs(date, "23:59") + 60 * 1000;
+
+    const { data, error } = await sb
+      .from("appointments")
+      .select("barber,start_ts")
+      .eq("barber", barber)
+      .gte("start_ts", dayStart)
+      .lt("start_ts", dayEnd);
+
+    if(error) throw error;
+
+    (data || []).forEach(r =>
+      occupiedSet.add(`${r.barber}|${Number(r.start_ts)}`)
+    );
+
+    cloudState.textContent = "Nuvem: ok";
+  }catch(e){
+    console.error(e);
+    cloudState.textContent = "Nuvem: erro";
+  }
         }
 
         if(res?.error) throw res.error;
