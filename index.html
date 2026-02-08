@@ -828,21 +828,30 @@
           .gte("start_ts", dayStart)
           .lt("start_ts", dayEnd);
 
-        async function refreshOccupied(){
+        
+        }
+
+        if(res?.error) throw res.error;
+
+        (res.data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
+        cloudState.textContent = "Nuvem: ok";
+      }catch(e){async function refreshOccupied(){
   cloudState.textContent = "Nuvem: carregando...";
   occupiedSet = new Set();
 
-  try{
-    if(!currentUser){
-      cloudState.textContent = "Nuvem: faça login";
-      return;
-    }
+  // 🔒 SEM LOGIN = NÃO BUSCA NADA
+  if(!currentUser){
+    cloudState.textContent = "Nuvem: faça login";
+    renderSlotGrid();
+    return;
+  }
 
+  try{
     const barber = barberSelect.value;
     const date = dateInput.value;
 
     const dayStart = toStartTs(date, "00:00");
-    const dayEnd = toStartTs(date, "23:59") + 60 * 1000;
+    const dayEnd = toStartTs(date, "23:59") + 60000;
 
     const { data, error } = await sb
       .from("appointments")
@@ -853,22 +862,19 @@
 
     if(error) throw error;
 
-    (data || []).forEach(r =>
-      occupiedSet.add(`${r.barber}|${Number(r.start_ts)}`)
-    );
+    (data || []).forEach(r => {
+      occupiedSet.add(`${r.barber}|${Number(r.start_ts)}`);
+    });
 
     cloudState.textContent = "Nuvem: ok";
-  }catch(e){
-    console.error(e);
+    renderSlotGrid();
+  }catch(err){
+    console.error(err);
     cloudState.textContent = "Nuvem: erro";
+    occupiedSet = new Set(); // NÃO bloqueia tudo
+    renderSlotGrid();
   }
-        }
-
-        if(res?.error) throw res.error;
-
-        (res.data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
-        cloudState.textContent = "Nuvem: ok";
-      }catch(e){
+}
         console.log(e);
         cloudState.textContent = "Nuvem: erro";
       }
