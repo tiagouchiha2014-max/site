@@ -1103,13 +1103,13 @@
     });
 
     openBookingBtn.addEventListener("click", () => {
-      if(!currentUser){
-        alert("Faça login do salão para agendar (admin).");
-        openAuthModal();
-        return;
-      }
-      openModal();
-    });
+  if(!currentUser){
+    alert("Faça login do salão para agendar.");
+    openAuthModal();
+    return;
+  }
+  openModal();
+});
 
     modal.addEventListener("click", (e) => {
       if(e.target?.dataset?.close === "true") closeModal();
