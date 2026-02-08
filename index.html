@@ -550,7 +550,13 @@
     const DISPLAY_WHATSAPP = "(99) 99136-0547";
 
     // Timezone fixa (Fortaleza = -03:00)
-    const TZ_OFFSET = "-03:00";
+    function toStartTs(dateStr, timeStr){
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const [hour, minute] = timeStr.split(":").map(Number);
+
+  const d = new Date(year, month - 1, day, hour, minute, 0, 0);
+  return d.getTime();
+    }
 
     /***********************
      *  SUPABASE (SEUS DADOS)
