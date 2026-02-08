@@ -550,13 +550,7 @@
     const DISPLAY_WHATSAPP = "(99) 99136-0547";
 
     // Timezone fixa (Fortaleza = -03:00)
-    function toStartTs(dateStr, timeStr){
-  const [year, month, day] = dateStr.split("-").map(Number);
-  const [hour, minute] = timeStr.split(":").map(Number);
-
-  const d = new Date(year, month - 1, day, hour, minute, 0, 0);
-  return d.getTime();
-    }
+    const TZ_OFFSET = "-03:00";
 
     /***********************
      *  SUPABASE (SEUS DADOS)
@@ -828,53 +822,21 @@
           .gte("start_ts", dayStart)
           .lt("start_ts", dayEnd);
 
-        
+        // 2) fallback: se não funcionar, tenta booked_slots (se você ainda usa a view pública)
+        if(res?.error){
+          res = await sb
+            .from("booked_slots")
+            .select("barber,start_ts")
+            .eq("barber", barber)
+            .gte("start_ts", dayStart)
+            .lt("start_ts", dayEnd);
         }
 
         if(res?.error) throw res.error;
 
         (res.data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
         cloudState.textContent = "Nuvem: ok";
-      }catch(e){async function refreshOccupied(){
-  cloudState.textContent = "Nuvem: carregando...";
-  occupiedSet = new Set();
-
-  // 🔒 SEM LOGIN = NÃO BUSCA NADA
-  if(!currentUser){
-    cloudState.textContent = "Nuvem: faça login";
-    renderSlotGrid();
-    return;
-  }
-
-  try{
-    const barber = barberSelect.value;
-    const date = dateInput.value;
-
-    const dayStart = toStartTs(date, "00:00");
-    const dayEnd = toStartTs(date, "23:59") + 60000;
-
-    const { data, error } = await sb
-      .from("appointments")
-      .select("barber,start_ts")
-      .eq("barber", barber)
-      .gte("start_ts", dayStart)
-      .lt("start_ts", dayEnd);
-
-    if(error) throw error;
-
-    (data || []).forEach(r => {
-      occupiedSet.add(`${r.barber}|${Number(r.start_ts)}`);
-    });
-
-    cloudState.textContent = "Nuvem: ok";
-    renderSlotGrid();
-  }catch(err){
-    console.error(err);
-    cloudState.textContent = "Nuvem: erro";
-    occupiedSet = new Set(); // NÃO bloqueia tudo
-    renderSlotGrid();
-  }
-}
+      }catch(e){
         console.log(e);
         cloudState.textContent = "Nuvem: erro";
       }
@@ -1103,13 +1065,13 @@
     });
 
     openBookingBtn.addEventListener("click", () => {
-  if(!currentUser){
-    alert("Faça login do salão para agendar.");
-    openAuthModal();
-    return;
-  }
-  openModal();
-});
+      if(!currentUser){
+        alert("Faça login do salão para agendar (admin).");
+        openAuthModal();
+        return;
+      }
+      openModal();
+    });
 
     modal.addEventListener("click", (e) => {
       if(e.target?.dataset?.close === "true") closeModal();
