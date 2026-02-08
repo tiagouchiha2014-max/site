@@ -37,14 +37,14 @@
     .container{max-width:1100px;margin:0 auto;padding:0 18px}
 
     .hero{
-  position:relative;
-  min-height:420px;
-  display:flex;
-  align-items:center;
-  background:
-    url("https://images.unsplash.com/photo-1672257493563-0dac80e22b7d?auto=format&fit=crop&fm=jpg&q=60&w=1600")
-    center/cover no-repeat;
-}
+      position:relative;
+      min-height:420px;
+      display:flex;
+      align-items:center;
+      background:
+        url("https://images.unsplash.com/photo-1672257493563-0dac80e22b7d?auto=format&fit=crop&fm=jpg&q=60&w=1600")
+        center/cover no-repeat;
+    }
     .hero__overlay{
       position:absolute;inset:0;
       background:linear-gradient(180deg, rgba(10,12,16,.55), rgba(10,12,16,.88));
@@ -69,6 +69,7 @@
       font-size:42px;
       line-height:1.05;
       text-shadow:0 10px 30px rgba(0,0,0,.45);
+      letter-spacing:.3px;
     }
     .subtitle{margin:0 0 18px;color:var(--muted);max-width:560px}
 
@@ -107,29 +108,42 @@
     }
     .card{
       text-align:left;
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,.14);
       border-radius:var(--radius);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
       padding:18px;
       cursor:pointer;
       min-height:130px;
-      box-shadow:0 12px 25px rgba(0,0,0,.28);
+      box-shadow: 0 16px 40px rgba(0,0,0,.35);
       transition:transform .15s ease, border-color .15s ease, background .15s ease;
     }
-    .card:hover{transform:translateY(-2px);border-color:rgba(212,160,74,.45)}
-    .card.is-selected{
-      border-color:rgba(212,160,74,.75);
-      background:linear-gradient(180deg, rgba(212,160,74,.18), rgba(255,255,255,.03));
+    .card:hover{
+      transform: translateY(-3px);
+      border-color: rgba(255, 211, 106, .55);
+      background: linear-gradient(180deg, rgba(255, 211, 106, .12), rgba(255,255,255,.03));
     }
-    .card__title{font-family:Cinzel, serif;font-size:20px;margin:0 0 6px}
-    .card__meta{color:var(--muted);font-weight:600}
+    .card.is-selected{
+      border-color: rgba(255, 211, 106, .85);
+      box-shadow: 0 0 0 1px rgba(255, 211, 106, .25), 0 18px 50px rgba(0,0,0,.45);
+    }
+    .card__title{
+      font-family:Cinzel, serif;
+      font-size:20px;
+      margin:0 0 6px;
+      color: #ffd36a;
+      text-shadow: 0 0 10px rgba(255, 211, 106, .35), 0 0 18px rgba(212, 160, 74, .28), 0 10px 22px rgba(0,0,0,.45);
+    }
+    .card__meta{
+      color: rgba(255, 223, 147, .92);
+      font-weight:600
+    }
 
     .cta{
       margin:26px 0 18px;
       padding:18px;
-      border:1px solid var(--line);
+      border:1px solid rgba(255, 211, 106, .22);
       border-radius:var(--radius);
-      background:rgba(0,0,0,.22);
+      background: linear-gradient(180deg, rgba(255, 211, 106, .10), rgba(0,0,0,.20));
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -147,10 +161,23 @@
       cursor:pointer;
     }
     .btn--gold{
+      position:relative;
+      overflow:hidden;
       border:none;
       background:linear-gradient(180deg, var(--gold1), var(--gold2));
       box-shadow:0 14px 30px rgba(0,0,0,.35);
+      transition: filter .15s ease, transform .15s ease;
     }
+    .btn--gold::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%);
+      transform: rotate(18deg);
+      opacity:.35;
+      pointer-events:none;
+    }
+    .btn--gold:hover{ filter: brightness(1.05); transform: translateY(-1px); }
 
     .footer{
       margin-top:20px;
@@ -167,6 +194,7 @@
     }
     .footer__link{color:var(--muted);text-decoration:none}
     .footer__link:hover{color:var(--text)}
+    .footer__actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
 
     .modal{position:fixed;inset:0;display:none}
     .modal.is-open{display:block}
@@ -180,7 +208,7 @@
       width:min(760px, calc(100% - 24px));
       margin:40px auto;
       background:linear-gradient(180deg, rgba(18,25,38,.96), rgba(10,12,16,.98));
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,.14);
       border-radius:22px;
       box-shadow:var(--shadow);
       overflow:hidden;
@@ -189,6 +217,7 @@
       display:flex;align-items:center;justify-content:space-between;
       padding:16px;
       border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.03);
     }
     .modal__head h3{margin:0;font-family:Cinzel, serif}
     .icon-btn{
@@ -238,8 +267,8 @@
       margin:10px 0 16px;
       padding:12px;
       border-radius:16px;
-      border:1px solid rgba(212,160,74,.35);
-      background:rgba(212,160,74,.10);
+      border:1px solid rgba(255, 211, 106, .45);
+      background: rgba(255, 211, 106, .12);
       color:var(--text);
       font-weight:700;
       min-height:22px;
@@ -254,7 +283,7 @@
       margin-top:6px;
     }
     .slot{
-      border:1px solid var(--line);
+      border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.05);
       color:var(--text);
       padding:10px 10px;
@@ -264,10 +293,11 @@
       text-align:center;
       user-select:none;
     }
-    .slot:hover{border-color:rgba(212,160,74,.45)}
+    .slot:hover{border-color:rgba(255, 211, 106, .55)}
     .slot.is-active{
-      border-color:rgba(212,160,74,.8);
-      background:rgba(212,160,74,.14);
+      border-color:rgba(255, 211, 106, .95);
+      background: rgba(255, 211, 106, .16);
+      box-shadow: 0 0 0 1px rgba(255, 211, 106, .20);
     }
     .slot.is-disabled{
       opacity:.45;
@@ -288,93 +318,13 @@
       .slots{grid-template-columns:repeat(3, minmax(0, 1fr))}
     }
 
-/* =========================
-   POLIMENTO VISUAL (Premium)
-   (injetado automaticamente)
-   ========================= */
-
-:root{
-  --gold-strong:#ffd36a;
-  --gold-soft:#ffdf93;
-  --gold-glow:rgba(255, 211, 106, .35);
-  --gold-glow2:rgba(212, 160, 74, .28);
-}
-
-/* Hero um pouco mais “luxo” */
-.hero h1{ letter-spacing:.3px; }
-
-/* ====== SERVIÇOS: dourado forte e brilhante ====== */
-.services h2,
-.services .muted{
-  color: var(--gold-strong);
-  text-shadow: 0 0 10px var(--gold-glow), 0 0 18px var(--gold-glow2);
-}
-
-/* Cards mais premium */
-.card{
-  border-color: rgba(255,255,255,.14);
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-  box-shadow: 0 16px 40px rgba(0,0,0,.35);
-}
-
-.card__title{
-  color: var(--gold-strong);
-  text-shadow: 0 0 10px var(--gold-glow), 0 0 18px var(--gold-glow2), 0 10px 22px rgba(0,0,0,.45);
-}
-
-.card__meta{
-  color: rgba(255, 223, 147, .92);
-}
-
-/* Hover mais bonito */
-.card:hover{
-  transform: translateY(-3px);
-  border-color: rgba(255, 211, 106, .55);
-  background: linear-gradient(180deg, rgba(255, 211, 106, .12), rgba(255,255,255,.03));
-}
-
-/* Selecionado com “borda ouro” */
-.card.is-selected{
-  border-color: rgba(255, 211, 106, .85);
-  box-shadow: 0 0 0 1px rgba(255, 211, 106, .25), 0 18px 50px rgba(0,0,0,.45);
-}
-
-/* CTA mais destacado */
-.cta{
-  background: linear-gradient(180deg, rgba(255, 211, 106, .10), rgba(0,0,0,.20));
-  border-color: rgba(255, 211, 106, .22);
-}
-
-/* Botão gold com brilho suave e hover */
-.btn--gold{ position:relative; overflow:hidden; }
-.btn--gold::after{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%);
-  transform: rotate(18deg);
-  opacity:.35;
-  pointer-events:none;
-}
-.btn--gold:hover{ filter: brightness(1.05); transform: translateY(-1px); }
-
-/* Modal mais clean */
-.modal__panel{ border-color: rgba(255,255,255,.14); }
-.modal__head{ background: rgba(255,255,255,.03); }
-.summary{
-  border-color: rgba(255, 211, 106, .45);
-  background: rgba(255, 211, 106, .12);
-}
-
-/* Slots mais bonitos */
-.slot{ border-color: rgba(255,255,255,.14); }
-.slot:hover{ border-color: rgba(255, 211, 106, .55); }
-.slot.is-active{
-  border-color: rgba(255, 211, 106, .95);
-  background: rgba(255, 211, 106, .16);
-  box-shadow: 0 0 0 1px rgba(255, 211, 106, .20);
-}
-</style>
+    /* ===== impressão / PDF ===== */
+    @media print{
+      body *{ visibility:hidden; }
+      #reportArea, #reportArea *{ visibility:visible; }
+      #reportArea{ position:fixed; left:0; top:0; width:100%; padding:18px; }
+    }
+  </style>
 </head>
 
 <body>
@@ -387,12 +337,14 @@
       </div>
 
       <h1>Agende seu Horário Online</h1>
-      <p class="subtitle">Escolha seu serviço e marque sua visita com facilidade (pagamento presencial). Horários são bloqueados automaticamente.</p>
+      <p class="subtitle">
+        Versão admin: apenas o salão cria agendamentos. Faça login para liberar o botão de agendar e o relatório de caixa.
+      </p>
 
       <div class="steps" role="list" aria-label="Etapas do agendamento">
-        <div class="step" role="listitem"><span class="step__num">1</span> Escolha o Serviço</div>
-        <div class="step" role="listitem"><span class="step__num">2</span> Escolha o Barbeiro</div>
-        <div class="step" role="listitem"><span class="step__num">3</span> Escolha Data e Hora</div>
+        <div class="step" role="listitem"><span class="step__num">1</span> Login do Salão</div>
+        <div class="step" role="listitem"><span class="step__num">2</span> Escolha o Serviço</div>
+        <div class="step" role="listitem"><span class="step__num">3</span> Data e Hora</div>
         <div class="step" role="listitem"><span class="step__num">4</span> Confirme no WhatsApp</div>
       </div>
     </div>
@@ -401,7 +353,7 @@
   <main class="container">
     <section class="services">
       <h2>Serviços</h2>
-      <p class="muted">Toque em um serviço para começar.</p>
+      <p class="muted">Toque em um serviço para começar (login necessário para agendar).</p>
 
       <div class="grid">
         <button class="card" data-service="Corte de Cabelo" data-duration="30" type="button">
@@ -433,19 +385,27 @@
   </main>
 
   <footer class="footer">
-    <div class="container footer__grid">
-      <div class="footer__item">📍 Próximo ao Hotel Pérola</div>
-      <div class="footer__item">🕘 Seg - Sáb | 08:00 - 20:00</div>
-      <a class="footer__item footer__link" id="waLink" href="#" target="_blank" rel="noreferrer">💬 WhatsApp: (99) 99136-0547</a>
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__item">📍 Próximo ao Hotel Pérola</div>
+        <div class="footer__item">🕘 Seg - Sáb | 08:00 - 20:00</div>
+        <a class="footer__item footer__link" id="waLink" href="#" target="_blank" rel="noreferrer">💬 WhatsApp: (99) 99136-0547</a>
+      </div>
+
+      <div class="footer__actions">
+        <button class="btn" id="openAuth" type="button">🔐 Login do Salão</button>
+        <button class="btn" id="openReport" type="button" style="display:none;">📄 Relatório / Caixa</button>
+      </div>
     </div>
   </footer>
 
+  <!-- ===== MODAL AGENDAMENTO ===== -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" data-close="true"></div>
 
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal__head">
-        <h3 id="modalTitle">Agendamento -- Salão Brasil</h3>
+        <h3 id="modalTitle">Agendamento — Salão Brasil</h3>
         <button class="icon-btn" data-close="true" aria-label="Fechar">✕</button>
       </div>
 
@@ -484,7 +444,7 @@
         </div>
 
         <div class="row">
-          <label>Seu nome</label>
+          <label>Nome do cliente</label>
           <input id="nameInput" type="text" placeholder="Ex.: Tiago" required />
         </div>
 
@@ -503,12 +463,79 @@
     </div>
   </div>
 
+  <!-- ===== MODAL LOGIN ===== -->
+  <div id="authModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" data-auth-close="true"></div>
+
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal__head">
+        <h3 id="authTitle">Área do Salão — Login</h3>
+        <button class="icon-btn" data-auth-close="true" aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="form">
+        <div class="row">
+          <label>E-mail</label>
+          <input id="authEmail" type="email" placeholder="seuemail@dominio.com" autocomplete="email" />
+        </div>
+
+        <div class="row">
+          <label>Senha</label>
+          <input id="authPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <div class="hint">Se for o primeiro acesso, use “Criar conta”.</div>
+        </div>
+
+        <div class="actions" style="justify-content:space-between;">
+          <button type="button" class="btn" id="btnSignup">Criar conta</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+            <button type="button" class="btn" id="btnLogin">Entrar</button>
+            <button type="button" class="btn btn--gold" id="btnLogout" style="display:none;">Sair</button>
+          </div>
+        </div>
+
+        <div class="summary" id="authStatus">Não autenticado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL RELATÓRIO / CAIXA ===== -->
+  <div id="reportModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop" data-report-close="true"></div>
+
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <div class="modal__head">
+        <h3 id="reportTitle">Relatório / Caixa</h3>
+        <button class="icon-btn" data-report-close="true" aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="form">
+        <div class="row two">
+          <div>
+            <label>Início</label>
+            <input id="repStart" type="date" />
+          </div>
+          <div>
+            <label>Fim</label>
+            <input id="repEnd" type="date" />
+          </div>
+        </div>
+
+        <div class="actions" style="justify-content:space-between;">
+          <button class="btn" id="btnRunReport" type="button">Atualizar</button>
+          <button class="btn btn--gold" id="btnPrintReport" type="button">Salvar em PDF</button>
+        </div>
+
+        <div id="reportArea" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Supabase JS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     /***********************
-     *  CONFIG (JÁ AJUSTADO)
+     *  CONFIG (AJUSTE AQUI)
      ***********************/
     const SHOP_NAME = "Salão Brasil";
     const BARBERS = ["Seu Zé", "Tarcísio"];
@@ -526,17 +553,19 @@
     const TZ_OFFSET = "-03:00";
 
     /***********************
-     *  SUPABASE (COLOQUE OS SEUS DADOS AQUI)
+     *  SUPABASE (SEUS DADOS)
      ***********************/
     const SUPABASE_URL = "https://iwlrfrecmwvletocblsz.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_XOr5tMs5O3ormucfpadjbA_aLFQTNtu";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Serviços agora com preço (para caixa)
+    // Você pode mudar os valores aqui.
     const SERVICES = [
-      { name: "Corte de Cabelo", duration: 30 },
-      { name: "Barba", duration: 30 },
-      { name: "Corte + Barba", duration: 60 },
-      { name: "Sobrancelha", duration: 30 },
+      { name: "Corte de Cabelo", duration: 30, price: 35 },
+      { name: "Barba",          duration: 30, price: 25 },
+      { name: "Corte + Barba",  duration: 60, price: 55 },
+      { name: "Sobrancelha",    duration: 30, price: 15 },
     ];
 
     const $ = (s) => document.querySelector(s);
@@ -570,16 +599,147 @@
     // Cache de horários ocupados (para data + barbeiro)
     let occupiedSet = new Set(); // chave = barber|start_ts
 
+    /***********************
+     * AUTH (ADMIN-ONLY)
+     ***********************/
+    const authModal = $("#authModal");
+    const openAuthBtn = $("#openAuth");
+    const openReportBtn = $("#openReport");
+
+    const authEmail = $("#authEmail");
+    const authPass = $("#authPass");
+    const btnLogin = $("#btnLogin");
+    const btnSignup = $("#btnSignup");
+    const btnLogout = $("#btnLogout");
+    const authStatus = $("#authStatus");
+
+    let currentUser = null;
+
+    function openAuthModal(){
+      authModal.classList.add("is-open");
+      authModal.setAttribute("aria-hidden", "false");
+    }
+    function closeAuthModal(){
+      authModal.classList.remove("is-open");
+      authModal.setAttribute("aria-hidden", "true");
+    }
+
+    function setAuthUI(){
+      if(currentUser){
+        authStatus.textContent = `Logado: ${currentUser.email}`;
+        btnLogout.style.display = "inline-block";
+        openReportBtn.style.display = "inline-block";
+      } else {
+        authStatus.textContent = "Não autenticado";
+        btnLogout.style.display = "none";
+        openReportBtn.style.display = "none";
+      }
+    }
+
+    async function loadSession(){
+      const { data } = await sb.auth.getSession();
+      currentUser = data?.session?.user ?? null;
+      setAuthUI();
+    }
+
+    openAuthBtn?.addEventListener("click", openAuthModal);
+    authModal?.addEventListener("click", (e) => {
+      if(e.target?.dataset?.authClose === "true") closeAuthModal();
+    });
+
+    btnSignup?.addEventListener("click", async () => {
+      const email = authEmail.value.trim();
+      const password = authPass.value.trim();
+      if(!email || !password){ alert("Informe e-mail e senha."); return; }
+
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if(error){ alert(error.message); return; }
+
+      currentUser = data?.user ?? null;
+      setAuthUI();
+      alert("Conta criada! (Se exigir confirmação, verifique seu e-mail).");
+    });
+
+    btnLogin?.addEventListener("click", async () => {
+      const email = authEmail.value.trim();
+      const password = authPass.value.trim();
+      if(!email || !password){ alert("Informe e-mail e senha."); return; }
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if(error){ alert(error.message); return; }
+
+      currentUser = data?.user ?? null;
+      setAuthUI();
+      alert("Logado ✅");
+      closeAuthModal();
+    });
+
+    btnLogout?.addEventListener("click", async () => {
+      await sb.auth.signOut();
+      currentUser = null;
+      setAuthUI();
+      alert("Você saiu.");
+    });
+
+    sb.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user ?? null;
+      setAuthUI();
+    });
+
+    /***********************
+     * RELATÓRIO / CAIXA
+     ***********************/
+    const reportModal = $("#reportModal");
+    const repStart = $("#repStart");
+    const repEnd = $("#repEnd");
+    const btnRunReport = $("#btnRunReport");
+    const btnPrintReport = $("#btnPrintReport");
+    const reportArea = $("#reportArea");
+
+    function openReport(){
+      reportModal.classList.add("is-open");
+      reportModal.setAttribute("aria-hidden", "false");
+    }
+    function closeReport(){
+      reportModal.classList.remove("is-open");
+      reportModal.setAttribute("aria-hidden", "true");
+    }
+
+    openReportBtn?.addEventListener("click", () => {
+      if(!currentUser){
+        alert("Faça login para ver o relatório.");
+        openAuthModal();
+        return;
+      }
+      const today = dateInput.value || new Date().toISOString().slice(0,10);
+      if(!repStart.value) repStart.value = today;
+      if(!repEnd.value) repEnd.value = today;
+      openReport();
+      runReport();
+    });
+
+    reportModal?.addEventListener("click", (e) => {
+      if(e.target?.dataset?.reportClose === "true") closeReport();
+    });
+
+    btnRunReport?.addEventListener("click", runReport);
+    btnPrintReport?.addEventListener("click", () => window.print());
+
+    function moneyBRL(cents){
+      const v = (cents || 0) / 100;
+      return v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+    }
+
+    /***********************
+     * FUNÇÕES BASE
+     ***********************/
     function buildTimeSlots(){
       const slots = [];
       for(let h = OPEN_HOUR; h < CLOSE_HOUR; h++){
         for(let m = 0; m < 60; m += SLOT_MINUTES){
-          // último slot do dia deve começar antes do CLOSE_HOUR
-          if(h === CLOSE_HOUR) continue;
           slots.push(`${pad2(h)}:${pad2(m)}`);
         }
       }
-      // remove slots >= CLOSE_HOUR (segurança)
       return slots.filter(t => {
         const [hh, mm] = t.split(":").map(Number);
         return (hh < CLOSE_HOUR) && !(hh === CLOSE_HOUR && mm > 0);
@@ -598,7 +758,7 @@
 
     function fillSelects(){
       serviceSelect.innerHTML = SERVICES.map(s =>
-        `<option value="${s.name}">${s.name} -- ${s.duration} min</option>`
+        `<option value="${s.name}">${s.name} — ${s.duration} min — R$ ${s.price}</option>`
       ).join("");
 
       barberSelect.innerHTML = BARBERS.map(b => `<option value="${b}">${b}</option>`).join("");
@@ -630,8 +790,6 @@
     }
 
     function toStartTs(dateStr, timeStr){
-      // dateStr = "YYYY-MM-DD", timeStr = "HH:MM"
-      // força Fortaleza (-03:00) para não depender do aparelho
       const iso = `${dateStr}T${timeStr}:00${TZ_OFFSET}`;
       const d = new Date(iso);
       return d.getTime();
@@ -645,24 +803,38 @@
       cloudState.textContent = "Nuvem: carregando...";
       occupiedSet = new Set();
       try{
+        if(!currentUser){
+          cloudState.textContent = "Nuvem: faça login";
+          return;
+        }
+
         const barber = barberSelect.value;
         const date = dateInput.value;
 
-        // range do dia (Fortaleza)
         const dayStart = toStartTs(date, "00:00");
-        const dayEnd = toStartTs(date, "23:59") + 60 * 1000; // +1min para incluir 23:59
+        const dayEnd = toStartTs(date, "23:59") + 60 * 1000;
 
-        // Busca apenas horários ocupados (view pública)
-        const { data, error } = await sb
-          .from("booked_slots")
+        // 1) tenta buscar direto da appointments (ideal para RLS por salão)
+        let res = await sb
+          .from("appointments")
           .select("barber,start_ts")
           .eq("barber", barber)
           .gte("start_ts", dayStart)
           .lt("start_ts", dayEnd);
 
-        if(error) throw error;
+        // 2) fallback: se não funcionar, tenta booked_slots (se você ainda usa a view pública)
+        if(res?.error){
+          res = await sb
+            .from("booked_slots")
+            .select("barber,start_ts")
+            .eq("barber", barber)
+            .gte("start_ts", dayStart)
+            .lt("start_ts", dayEnd);
+        }
 
-        (data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
+        if(res?.error) throw res.error;
+
+        (res.data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
         cloudState.textContent = "Nuvem: ok";
       }catch(e){
         console.log(e);
@@ -678,6 +850,8 @@
     function updateSummary(){
       const service = serviceSelect.value;
       const duration = (SERVICES.find(s => s.name === service)?.duration) ?? "";
+      const price = (SERVICES.find(s => s.name === service)?.price) ?? 0;
+
       const barber = barberSelect.value || "--";
       const date = dateInput.value || "--";
       const time = timeSelect.value || "--";
@@ -685,7 +859,7 @@
       const disabled = (date !== "--" && time !== "--") ? isDisabledSlot(barber, date, time) : false;
       timeHint.textContent = disabled ? "⚠️ Esse horário está ocupado" : "✅ Horário disponível";
 
-      summary.textContent = `Serviço: ${service} (${duration}min) • Barbeiro: ${barber} • ${date} às ${time}`;
+      summary.textContent = `Serviço: ${service} (${duration}min) • R$ ${price} • Barbeiro: ${barber} • ${date} às ${time}`;
     }
 
     function renderSlotGrid(){
@@ -720,38 +894,195 @@
         });
       });
 
-      // Se o horário selecionado ficou ocupado, tenta ir pro próximo disponível
       if(isDisabledSlot(barber, date, timeSelect.value)){
         const firstFree = slots.find(t => !isDisabledSlot(barber, date, t));
-        if(firstFree){
-          timeSelect.value = firstFree;
-        }
+        if(firstFree) timeSelect.value = firstFree;
       }
       updateSummary();
     }
 
     async function reserveSlotOrFail(payload){
-      // Insere na tabela appointments; se já existir, a UNIQUE INDEX bloqueia.
-      const { error } = await sb.from("appointments").insert(payload);
-      if(error) throw error;
+      // tenta inserir com campos extras (salon_id, price_cents); se sua tabela ainda não tiver, faz fallback
+      let { error } = await sb.from("appointments").insert(payload);
+
+      if(error){
+        const msg = (error.message || "").toLowerCase();
+        const code = (error.code || "").toString();
+
+        // fallback: remove campos que talvez não existam ainda
+        const fallbackPayload = { ...payload };
+        delete fallbackPayload.salon_id;
+        delete fallbackPayload.price_cents;
+
+        // tenta novamente se suspeitar que o erro é por coluna inexistente
+        if(msg.includes("column") || msg.includes("salon_id") || msg.includes("price_cents")){
+          const res2 = await sb.from("appointments").insert(fallbackPayload);
+          if(res2.error) throw res2.error;
+          return true;
+        }
+
+        // conflito unique (23505) ou outros
+        throw error;
+      }
       return true;
     }
 
+    async function runReport(){
+      reportArea.innerHTML = "Carregando...";
+      if(!currentUser){ reportArea.innerHTML = "Faça login."; return; }
+
+      const start = repStart.value;
+      const end = repEnd.value;
+      if(!start || !end){ reportArea.innerHTML = "Informe início e fim."; return; }
+
+      const startTs = toStartTs(start, "00:00");
+      const endTs = toStartTs(end, "23:59") + 60*1000;
+
+      // tenta pegar price_cents (se existir), senão calcula pelo serviço
+      let res = await sb
+        .from("appointments")
+        .select("start_ts,barber,service,price_cents,customer_name")
+        .gte("start_ts", startTs)
+        .lt("start_ts", endTs)
+        .order("start_ts", { ascending: true });
+
+      if(res?.error){
+        res = await sb
+          .from("appointments")
+          .select("start_ts,barber,service,customer_name")
+          .gte("start_ts", startTs)
+          .lt("start_ts", endTs)
+          .order("start_ts", { ascending: true });
+      }
+
+      if(res?.error){
+        console.log(res.error);
+        reportArea.innerHTML = "Erro ao carregar (veja console).";
+        return;
+      }
+
+      const rows = res.data || [];
+      const totalClients = rows.length;
+
+      const byService = {};
+      const byBarber = {};
+      let totalCents = 0;
+
+      rows.forEach(r => {
+        byService[r.service] = (byService[r.service] || 0) + 1;
+        byBarber[r.barber] = (byBarber[r.barber] || 0) + 1;
+
+        if(typeof r.price_cents === "number"){
+          totalCents += r.price_cents;
+        } else {
+          const p = (SERVICES.find(s => s.name === r.service)?.price) ?? 0;
+          totalCents += Math.round(p * 100);
+        }
+      });
+
+      const svcList = Object.entries(byService)
+        .sort((a,b)=>b[1]-a[1])
+        .map(([k,v]) => `<li><b>${k}</b>: ${v}</li>`).join("");
+
+      const barbList = Object.entries(byBarber)
+        .sort((a,b)=>b[1]-a[1])
+        .map(([k,v]) => `<li><b>${k}</b>: ${v}</li>`).join("");
+
+      const apptList = rows.map(r => {
+        const d = new Date(r.start_ts);
+        const dd = String(d.getDate()).padStart(2,"0");
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const yyyy = d.getFullYear();
+        const hh = String(d.getHours()).padStart(2,"0");
+        const mi = String(d.getMinutes()).padStart(2,"0");
+
+        const cents = (typeof r.price_cents === "number")
+          ? r.price_cents
+          : Math.round((((SERVICES.find(s => s.name === r.service)?.price) ?? 0) * 100));
+
+        return `<tr>
+          <td>${dd}/${mm}/${yyyy} ${hh}:${mi}</td>
+          <td>${(r.customer_name || "").toString().replace(/</g,"&lt;")}</td>
+          <td>${r.service}</td>
+          <td>${r.barber}</td>
+          <td style="text-align:right">${moneyBRL(cents)}</td>
+        </tr>`;
+      }).join("");
+
+      reportArea.innerHTML = `
+        <div style="border:1px solid rgba(0,0,0,.12); border-radius:14px; padding:14px; background:#fff; color:#111">
+          <h2 style="margin:0 0 6px">Relatório / Caixa — ${SHOP_NAME}</h2>
+          <div style="margin:0 0 10px">Período: <b>${start}</b> até <b>${end}</b></div>
+
+          <div style="display:flex; gap:14px; flex-wrap:wrap; margin:10px 0">
+            <div><b>Total de clientes:</b> ${totalClients}</div>
+            <div><b>Faturamento estimado:</b> ${moneyBRL(totalCents)}</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:12px 0">
+            <div>
+              <h3 style="margin:0 0 6px">Por serviço</h3>
+              <ul style="margin:0; padding-left:18px">${svcList || "<li>—</li>"}</ul>
+            </div>
+            <div>
+              <h3 style="margin:0 0 6px">Por barbeiro</h3>
+              <ul style="margin:0; padding-left:18px">${barbList || "<li>—</li>"}</ul>
+            </div>
+          </div>
+
+          <h3 style="margin:14px 0 6px">Agendamentos</h3>
+          <table style="width:100%; border-collapse:collapse" border="1" cellspacing="0" cellpadding="6">
+            <thead>
+              <tr>
+                <th>Data/Hora</th><th>Cliente</th><th>Serviço</th><th>Barbeiro</th><th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${apptList || `<tr><td colspan="5">Sem registros</td></tr>`}
+            </tbody>
+          </table>
+
+          <div style="margin-top:10px; font-size:12px; opacity:.75">
+            Gerado em ${new Date().toLocaleString("pt-BR")}
+          </div>
+        </div>
+      `;
+    }
+
+    /***********************
+     * EVENTOS / UX
+     ***********************/
     $$(".card").forEach(card => {
       card.addEventListener("click", () => {
         setServiceFromCard(card.dataset.service);
+        if(!currentUser){
+          alert("Faça login do salão para agendar (admin).");
+          openAuthModal();
+          return;
+        }
         openModal();
       });
     });
 
-    openBookingBtn.addEventListener("click", openModal);
+    openBookingBtn.addEventListener("click", () => {
+      if(!currentUser){
+        alert("Faça login do salão para agendar (admin).");
+        openAuthModal();
+        return;
+      }
+      openModal();
+    });
 
     modal.addEventListener("click", (e) => {
       if(e.target?.dataset?.close === "true") closeModal();
     });
 
     document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+      if(e.key === "Escape"){
+        if(modal.classList.contains("is-open")) closeModal();
+        if(authModal.classList.contains("is-open")) closeAuthModal();
+        if(reportModal.classList.contains("is-open")) closeReport();
+      }
     });
 
     [serviceSelect, barberSelect, dateInput, timeSelect].forEach(el => {
@@ -769,17 +1100,24 @@
     bookingForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      if(!currentUser){
+        alert("Você precisa estar logado para registrar agendamentos.");
+        openAuthModal();
+        return;
+      }
+
       const customer = nameInput.value.trim();
-      if(!customer) { alert("Informe seu nome."); return; }
+      if(!customer) { alert("Informe o nome do cliente."); return; }
 
       const phone = phoneInput.value.trim();
       const service = serviceSelect.value;
       const duration = (SERVICES.find(s => s.name === service)?.duration) ?? 30;
+      const price = (SERVICES.find(s => s.name === service)?.price) ?? 0;
+
       const barber = barberSelect.value;
       const date = dateInput.value;
       const time = timeSelect.value;
 
-      // Bloqueio no front (UX)
       if(isDisabledSlot(barber, date, time)){
         alert("Esse horário já foi reservado. Escolha outro.");
         await refreshOccupied();
@@ -789,13 +1127,16 @@
 
       const startTs = toStartTs(date, time);
 
-      // Desabilita botão para evitar duplo clique
       submitBtn.disabled = true;
       submitBtn.textContent = "Reservando...";
 
       try{
-        // 1) Reserva na nuvem (bloqueio real pela UNIQUE constraint)
         await reserveSlotOrFail({
+          // estes 2 campos vão funcionar quando você criar no Supabase;
+          // se ainda não existirem, o código faz fallback automaticamente.
+          salon_id: currentUser.id,
+          price_cents: Math.round(price * 100),
+
           barber,
           service,
           duration_min: duration,
@@ -804,15 +1145,13 @@
           customer_phone: phone || null
         });
 
-        // 2) Atualiza ocupados e UI
         await refreshOccupied();
         renderSlotGrid();
 
-        // 3) Abre WhatsApp para confirmar
         const msg =
 `Olá! Quero agendar no ${SHOP_NAME} (pagamento presencial).
-• Nome: ${customer}
-• Serviço: ${service} (${duration} min)
+• Cliente: ${customer}
+• Serviço: ${service} (${duration} min) — R$ ${price}
 • Barbeiro: ${barber}
 • Data/Hora: ${date} às ${time}
 ${phone ? `• Telefone: ${phone}` : ""}`.trim();
@@ -823,9 +1162,8 @@ ${phone ? `• Telefone: ${phone}` : ""}`.trim();
         alert("Horário reservado ✅ Agora confirme no WhatsApp.");
         closeModal();
       }catch(err){
-        // Se for conflito de UNIQUE, Supabase geralmente retorna erro 23505 (Postgres unique_violation)
         console.log(err);
-        alert("Não deu para reservar (provavelmente alguém pegou esse horário agora). Escolha outro.");
+        alert("Não deu para reservar (talvez alguém pegou esse horário agora). Escolha outro.");
         await refreshOccupied();
         renderSlotGrid();
       } finally {
@@ -834,11 +1172,14 @@ ${phone ? `• Telefone: ${phone}` : ""}`.trim();
       }
     });
 
-    // INIT
+    /***********************
+     * INIT
+     ***********************/
     fillSelects();
     setMinDateToday();
     setServiceFromCard(selectedService);
     updateSummary();
+    loadSession();
   </script>
 </body>
 </html>
