@@ -983,14 +983,13 @@
       const endTs = toStartTs(end, "23:59") + 60*1000;
 
       // Multi-salão: filtra por salon_id = currentUser.id
-      const res = await sb
+      let res = await sb
   .from("appointments")
-  .select("barber,start_ts,customer_name,service")
+  .select('start_ts,barber,service,price_cents,salon_id,customer_name,"custome name"')
   .eq("salon_id", currentUser.id)
-  .eq("barber", barber)
-  .gte("start_ts", dayStart)
-  .lt("start_ts", dayEnd);
-
+  .gte("start_ts", startTs)
+  .lt("start_ts", endTs)
+  .order("start_ts", { ascending: true });
       // fallback se não existir price_cents no select
       if(res?.error){
         res = await sb
