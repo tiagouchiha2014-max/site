@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Agenda Pro — Interno</title>
+  <title>Agenda Pro -- Interno</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -326,6 +326,77 @@
       #reportArea, #reportArea *{ visibility:visible; }
       #reportArea{ position:fixed; left:0; top:0; width:100%; padding:18px; }
     }
+
+    /***********************
+     * GATE PAGAMENTO (PIX MANUAL)
+     ***********************/
+    .gate{
+      position:fixed; inset:0;
+      display:none;
+      align-items:center; justify-content:center;
+      padding:18px;
+      background:rgba(0,0,0,.68);
+      backdrop-filter: blur(6px);
+      z-index:9999;
+    }
+    .gate.is-open{ display:flex; }
+    .gateCard{
+      width:min(720px, 100%);
+      background:linear-gradient(180deg, rgba(18,25,38,.97), rgba(10,12,16,.98));
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .gateCard h2{ margin:0 0 6px; font-family:Cinzel, serif; }
+    .gateGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      margin:14px 0;
+    }
+    .gateBox{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(255,255,255,.03);
+    }
+    .gateLabel{ font-size:12px; opacity:.8; color:var(--muted); font-weight:700; }
+    .gateValue{ margin-top:4px; font-weight:800; font-size:16px; }
+    .divider{ height:1px; background:rgba(255,255,255,.12); margin:14px 0; }
+    .pixBox{
+      display:flex; gap:12px;
+      align-items:center; justify-content:space-between;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(255,255,255,.03);
+    }
+    .pixKey{ font-weight:900; letter-spacing:.2px; word-break:break-all; }
+    .gateActions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .btnPrimary, .btnSecondary, .btnGhost{
+      border-radius:14px;
+      padding:12px 16px;
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btnPrimary{
+      background:#25D366;
+      color:#06110a;
+      border-color:transparent;
+    }
+    .btnSecondary{ background:rgba(255,255,255,.06); color:var(--text); }
+    .btnGhost{ background:transparent; color:rgba(255,255,255,.78); }
+    .fine{ font-size:12px; opacity:.85; color:var(--muted); margin-top:10px; }
+    @media (max-width:520px){
+      .gateGrid{ grid-template-columns: 1fr; }
+      .pixBox{ flex-direction:column; align-items:stretch; }
+    }
   </style>
 </head>
 
@@ -389,7 +460,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer__grid">
-        <div class="footer__item">🔒 Uso interno — cada salão acessa com seu login</div>
+        <div class="footer__item">🔒 Uso interno -- cada salão acessa com seu login</div>
       </div>
 
       <div class="footer__actions">
@@ -399,13 +470,62 @@
     </div>
   </footer>
 
+  <!-- GATE PAGAMENTO (PIX MANUAL) -->
+  <section id="billingGate" class="gate" aria-hidden="true">
+    <div class="gateCard">
+      <h2>Assinatura Agenda Pro</h2>
+      <p class="muted" style="margin:0 0 8px;color:var(--muted)">
+        Para continuar usando o sistema, ative sua assinatura via Pix e envie o comprovante.
+      </p>
+
+      <div class="gateGrid">
+        <div class="gateBox">
+          <div class="gateLabel">Plano</div>
+          <div class="gateValue">Profissional</div>
+        </div>
+        <div class="gateBox">
+          <div class="gateLabel">Valor</div>
+          <div class="gateValue">R$ 39,90 / mês</div>
+        </div>
+        <div class="gateBox">
+          <div class="gateLabel">Status</div>
+          <div class="gateValue" id="subStatus">Inativo</div>
+        </div>
+        <div class="gateBox">
+          <div class="gateLabel">Válido até</div>
+          <div class="gateValue" id="paidUntil">--</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 style="margin:0 0 8px;font-family:Cinzel,serif">Pagamento via Pix (manual)</h3>
+      <div class="pixBox">
+        <div>
+          <div class="gateLabel">Chave Pix</div>
+          <div class="pixKey" id="pixKey">SUA_CHAVE_PIX_AQUI</div>
+          <div class="fine">Depois do Pix, envie o comprovante no WhatsApp.</div>
+        </div>
+        <button id="copyPixBtn" class="btnSecondary" type="button">Copiar chave</button>
+      </div>
+
+      <div class="gateActions">
+        <a id="sendProofBtn" class="btnPrimary" target="_blank" rel="noopener">Enviar comprovante no WhatsApp</a>
+        <button id="retrySubBtn" class="btnSecondary" type="button">Já paguei, atualizar</button>
+        <button id="logoutGateBtn" class="btnGhost" type="button">Sair</button>
+      </div>
+
+      <p class="fine">Liberação: após confirmação, renovamos por 30 dias.</p>
+    </div>
+  </section>
+
   <!-- MODAL AGENDAMENTO -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" data-close="true"></div>
 
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal__head">
-        <h3 id="modalTitle">Agendamento — Interno</h3>
+        <h3 id="modalTitle">Agendamento -- Interno</h3>
         <button class="icon-btn" data-close="true" aria-label="Fechar">✕</button>
       </div>
 
@@ -470,7 +590,7 @@
 
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <div class="modal__head">
-        <h3 id="authTitle">Área do Salão — Login</h3>
+        <h3 id="authTitle">Área do Salão -- Login</h3>
         <button class="icon-btn" data-auth-close="true" aria-label="Fechar">✕</button>
       </div>
 
@@ -495,7 +615,7 @@
         <div class="row">
           <label>Senha</label>
           <input id="authPass" type="password" placeholder="••••••••" autocomplete="current-password" />
-          <div class="hint">Se for o primeiro acesso, use “Criar conta”.</div>
+          <div class="hint">Se for o primeiro acesso, use "Criar conta".</div>
         </div>
 
         <div class="actions" style="justify-content:space-between;">
@@ -558,6 +678,12 @@
     const SUPABASE_ANON_KEY = "sb_publishable_R4lZfIm5Ghzg0IXjNvVI6g_arOCNy25";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // ===== PAGAMENTO (PIX MANUAL) =====
+    const PLAN_PRICE_TEXT = "39,90";
+    const PLAN_CODE = "pro";
+    const PIX_KEY = "61666729345"; // <<< TROQUE AQUI
+    const WHATSAPP_NUMBER_E164 = "99991360547"; // <<< TROQUE AQUI (ex: 5598999999999)
+
     const SERVICES = [
       { name: "Corte de Cabelo", duration: 30, price: 35 },
       { name: "Barba",          duration: 30, price: 25 },
@@ -591,6 +717,157 @@
 
     let occupiedSet = new Set();
     let occupiedInfo = new Map();
+
+    /***********************
+     * GATE (ASSINATURA)
+     ***********************/
+    const billingGate = $("#billingGate");
+    const subStatusEl = $("#subStatus");
+    const paidUntilEl = $("#paidUntil");
+    const pixKeyEl = $("#pixKey");
+    const copyPixBtn = $("#copyPixBtn");
+    const sendProofBtn = $("#sendProofBtn");
+    const retrySubBtn = $("#retrySubBtn");
+    const logoutGateBtn = $("#logoutGateBtn");
+
+    pixKeyEl.textContent = PIX_KEY;
+
+    let subscriptionActive = false;
+
+    function todayISODate(){
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function openGate(){
+      billingGate.classList.add("is-open");
+      billingGate.setAttribute("aria-hidden","false");
+    }
+    function closeGate(){
+      billingGate.classList.remove("is-open");
+      billingGate.setAttribute("aria-hidden","true");
+    }
+
+    function setWhatsAppLink(email){
+      const msg = encodeURIComponent(
+        `Olá! Segue o comprovante do Pix do Agenda Pro.\n\nPlano: PRO\nValor: R$ ${PLAN_PRICE_TEXT}\nE-mail do salão: ${email || ""}\nData: ${todayISODate()}`
+      );
+      sendProofBtn.href = `https://wa.me/${WHATSAPP_NUMBER_E164}?text=${msg}`;
+    }
+
+    function isSubActive(sub){
+      if(!sub) return false;
+      if(sub.status !== "active") return false;
+      if(!sub.paid_until) return false;
+      return sub.paid_until >= todayISODate(); // yyyy-mm-dd
+    }
+
+    async function ensureSubscriptionRow(userId){
+      // tenta ler
+      const { data: sub, error } = await sb
+        .from("subscriptions")
+        .select("plan,status,paid_until")
+        .eq("salon_id", userId)
+        .maybeSingle();
+
+      if(error){
+        console.log("Erro subscriptions:", error);
+        subStatusEl.textContent = "Erro";
+        paidUntilEl.textContent = "--";
+        openGate();
+        subscriptionActive = false;
+        return null;
+      }
+
+      if(sub) return sub;
+
+      // se não existe, cria inativo
+      const ins = await sb.from("subscriptions").insert([{
+        salon_id: userId,
+        plan: PLAN_CODE,
+        status: "inactive",
+        paid_until: null
+      }]).select("plan,status,paid_until").maybeSingle();
+
+      if(ins?.error){
+        console.log("Erro insert subscriptions:", ins.error);
+        subStatusEl.textContent = "Erro";
+        paidUntilEl.textContent = "--";
+        openGate();
+        subscriptionActive = false;
+        return null;
+      }
+      return ins.data || { plan: PLAN_CODE, status:"inactive", paid_until:null };
+    }
+
+    async function enforceSubscriptionGate(){
+      subscriptionActive = false;
+      if(!currentUser){
+        closeGate();
+        return;
+      }
+
+      setWhatsAppLink(currentUser.email);
+
+      const sub = await ensureSubscriptionRow(currentUser.id);
+      if(!sub){
+        openGate();
+        subscriptionActive = false;
+        return;
+      }
+
+      const active = isSubActive(sub);
+      subscriptionActive = active;
+
+      if(active){
+        closeGate();
+      }else{
+        const statusLabel = (sub.status === "active") ? "Vencido" : "Inativo";
+        subStatusEl.textContent = statusLabel;
+        paidUntilEl.textContent = sub.paid_until || "--";
+        openGate();
+      }
+    }
+
+    function requireActiveOrPay(){
+      if(!currentUser){
+        alert("Faça login do salão para continuar.");
+        openAuthModal();
+        return false;
+      }
+      if(!subscriptionActive){
+        openGate();
+        return false;
+      }
+      return true;
+    }
+
+    copyPixBtn?.addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(PIX_KEY);
+        copyPixBtn.textContent = "Copiado!";
+        setTimeout(()=>copyPixBtn.textContent="Copiar chave", 1200);
+      }catch(e){
+        alert("Não consegui copiar automaticamente. Copie manualmente a chave Pix.");
+      }
+    });
+
+    retrySubBtn?.addEventListener("click", async ()=>{
+      await enforceSubscriptionGate();
+    });
+
+    logoutGateBtn?.addEventListener("click", async ()=>{
+      await sb.auth.signOut();
+      currentUser = null;
+      subscriptionActive = false;
+      closeGate();
+      setAuthUI();
+      fillSelects();
+      alert("Você saiu.");
+    });
 
     /***********************
      * SALÃO + PROFISSIONAIS (por login)
@@ -683,6 +960,7 @@
       }
       setAuthUI();
       fillSelects();
+      await enforceSubscriptionGate();
     }
 
     openAuthBtn?.addEventListener("click", openAuthModal);
@@ -713,6 +991,7 @@
       }
 
       setAuthUI();
+      await enforceSubscriptionGate();
       alert("Conta criada! (Se exigir confirmação, verifique seu e-mail).");
     });
 
@@ -735,6 +1014,7 @@
       }
 
       setAuthUI();
+      await enforceSubscriptionGate();
       alert("Logado ✅");
       closeAuthModal();
     });
@@ -742,18 +1022,21 @@
     btnLogout?.addEventListener("click", async ()=>{
       await sb.auth.signOut();
       currentUser = null;
+      subscriptionActive = false;
+      closeGate();
       setAuthUI();
       fillSelects();
       alert("Você saiu.");
     });
 
-    sb.auth.onAuthStateChange((_e, session)=>{
+    sb.auth.onAuthStateChange(async (_e, session)=>{
       currentUser = session?.user ?? null;
       if(currentUser){
         salonNameInput.value = getSalonName();
       }
       setAuthUI();
       fillSelects();
+      await enforceSubscriptionGate();
     });
 
     salonNameInput?.addEventListener("change", ()=>{
@@ -792,11 +1075,8 @@
     }
 
     openReportBtn?.addEventListener("click", ()=>{
-      if(!currentUser){
-        alert("Faça login para ver o relatório.");
-        openAuthModal();
-        return;
-      }
+      if(!requireActiveOrPay()) return;
+
       const today = dateInput.value || new Date().toISOString().slice(0,10);
       if(!repStart.value) repStart.value = today;
       if(!repEnd.value) repEnd.value = today;
@@ -841,7 +1121,7 @@
 
     function fillSelects(){
       serviceSelect.innerHTML = SERVICES.map(s=>{
-        return `<option value="${s.name}">${s.name} — ${s.duration} min</option>`;
+        return `<option value="${s.name}">${s.name} -- ${s.duration} min</option>`;
       }).join("");
 
       const staff = getStaff();
@@ -852,7 +1132,6 @@
 
       serviceSelect.value = selectedService;
 
-      // atualiza valor padrão do serviço na UI
       const def = (SERVICES.find(x=>x.name===serviceSelect.value)?.price) ?? 0;
       if(priceInput && (!priceInput.value || Number(priceInput.value) <= 0)){
         priceInput.value = def;
@@ -892,7 +1171,6 @@
     function setCloudError(msg){
       cloudState.textContent = "Nuvem: erro";
       cloudState.title = msg || "";
-      // mostra também no hint pra ajudar
       if(msg) timeHint.textContent = `⚠️ Nuvem: ${msg}`;
     }
 
@@ -957,7 +1235,7 @@
       const info = occupiedInfo.get(k);
       if(!info) return null;
       const nome = info.customer_name || "Cliente";
-      return `Ocupado — ${nome}`;
+      return `Ocupado -- ${nome}`;
     }
 
     function updateSummary(){
@@ -1109,7 +1387,7 @@
 
       reportArea.innerHTML = `
         <div style="border:1px solid rgba(0,0,0,.12); border-radius:14px; padding:14px; background:#fff; color:#111">
-          <h2 style="margin:0 0 6px">Relatório / Caixa — ${getSalonName()}</h2>
+          <h2 style="margin:0 0 6px">Relatório / Caixa -- ${getSalonName()}</h2>
           <div style="margin:0 0 10px">Período: <b>${start}</b> até <b>${end}</b></div>
 
           <div style="display:flex; gap:14px; flex-wrap:wrap; margin:10px 0">
@@ -1120,11 +1398,11 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:12px 0">
             <div>
               <h3 style="margin:0 0 6px">Por serviço</h3>
-              <ul style="margin:0; padding-left:18px">${svcList || "<li>—</li>"}</ul>
+              <ul style="margin:0; padding-left:18px">${svcList || "<li>--</li>"}</ul>
             </div>
             <div>
               <h3 style="margin:0 0 6px">Por profissional</h3>
-              <ul style="margin:0; padding-left:18px">${barbList || "<li>—</li>"}</ul>
+              <ul style="margin:0; padding-left:18px">${barbList || "<li>--</li>"}</ul>
             </div>
           </div>
 
@@ -1153,21 +1431,14 @@
     $$(".card").forEach(card=>{
       card.addEventListener("click", ()=>{
         setServiceFromCard(card.dataset.service);
-        if(!currentUser){
-          alert("Faça login do salão para registrar agendamentos.");
-          openAuthModal();
-          return;
-        }
+
+        if(!requireActiveOrPay()) return;
         openModal();
       });
     });
 
     openBookingBtn.addEventListener("click", ()=>{
-      if(!currentUser){
-        alert("Faça login do salão para registrar agendamentos.");
-        openAuthModal();
-        return;
-      }
+      if(!requireActiveOrPay()) return;
       openModal();
     });
 
@@ -1202,11 +1473,7 @@
     bookingForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
 
-      if(!currentUser){
-        alert("Você precisa estar logado para registrar agendamentos.");
-        openAuthModal();
-        return;
-      }
+      if(!requireActiveOrPay()) return;
 
       const customer = nameInput.value.trim();
       if(!customer){ alert("Informe o nome do cliente."); return; }
@@ -1245,7 +1512,7 @@
           duration_min: duration,
           start_ts: startTs,
           customer_name: customer,
-          price_cents: Math.round(priceNum * 100) // ✅ preço gravado no agendamento
+          price_cents: Math.round(priceNum * 100)
         });
 
         await refreshOccupied();
