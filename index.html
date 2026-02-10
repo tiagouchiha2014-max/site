@@ -321,7 +321,6 @@
       .slots{grid-template-columns:repeat(3, minmax(0, 1fr))}
     }
 
-    /* ===== impressão / PDF ===== */
     @media print{
       body *{ visibility:hidden; }
       #reportArea, #reportArea *{ visibility:visible; }
@@ -341,7 +340,7 @@
 
       <h1>Controle Interno de Agendamentos & Caixa</h1>
       <p class="subtitle">
-        Multi-salão: cada salão faz login e registra seus próprios agendamentos. Horários ocupados mostram o nome do cliente.
+        Multi-salão: cada salão faz login e registra seus próprios agendamentos. O valor é informado no agendamento.
       </p>
 
       <div class="steps" role="list" aria-label="Etapas do agendamento">
@@ -400,7 +399,7 @@
     </div>
   </footer>
 
-  <!-- ===== MODAL AGENDAMENTO ===== -->
+  <!-- MODAL AGENDAMENTO -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" data-close="true"></div>
 
@@ -412,19 +411,25 @@
 
       <form id="bookingForm" class="form">
         <div class="info">
-          <div>📅 Horários ocupados mostram o cliente (somente leitura)</div>
+          <div>📅 Ocupados mostram o cliente</div>
           <div class="badge" id="cloudState">Nuvem: --</div>
         </div>
 
         <div class="row">
           <label>Serviço</label>
           <select id="serviceSelect" required></select>
-          <div class="hint">Intervalos fixos de 30 minutos.</div>
+          <div class="hint">O valor pode ser alterado abaixo para este agendamento.</div>
         </div>
 
-        <div class="row">
-          <label>Profissional</label>
-          <select id="barberSelect" required></select>
+        <div class="row two">
+          <div>
+            <label>Valor do serviço (R$)</label>
+            <input id="priceInput" type="number" inputmode="decimal" min="0" step="0.5" placeholder="Ex.: 40" required />
+          </div>
+          <div>
+            <label>Profissional</label>
+            <select id="barberSelect" required></select>
+          </div>
         </div>
 
         <div class="row two">
@@ -459,7 +464,7 @@
     </div>
   </div>
 
-  <!-- ===== MODAL LOGIN ===== -->
+  <!-- MODAL LOGIN -->
   <div id="authModal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" data-auth-close="true"></div>
 
@@ -474,6 +479,12 @@
           <label>Nome do salão (interno)</label>
           <input id="salonNameInput" type="text" placeholder="Ex.: Barbearia Centro" />
           <div class="hint">Fica salvo neste dispositivo para o usuário logado.</div>
+        </div>
+
+        <div class="row">
+          <label>Profissionais (um por linha)</label>
+          <input id="staffQuick" type="text" placeholder="Ex.: Ana, Bruna, Carla" />
+          <div class="hint">Dica: separe por vírgula. (Também aceita um por linha no código, mas aqui é simples.)</div>
         </div>
 
         <div class="row">
@@ -500,7 +511,7 @@
     </div>
   </div>
 
-  <!-- ===== MODAL RELATÓRIO / CAIXA ===== -->
+  <!-- MODAL RELATÓRIO -->
   <div id="reportModal" class="modal" aria-hidden="true">
     <div class="modal__backdrop" data-report-close="true"></div>
 
@@ -532,29 +543,21 @@
     </div>
   </div>
 
-  <!-- Supabase JS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
     /***********************
-     *  CONFIG
+     * CONFIG
      ***********************/
-    const BARBERS = ["Seu Zé", "Tarcísio"]; // profissionais
-    const OPEN_HOUR = 8;
-    const CLOSE_HOUR = 20;   // último slot começa 19:30
+    const OPEN_HOUR = 7;
+    const CLOSE_HOUR = 22;
     const SLOT_MINUTES = 30;
-
-    // Timezone fixa (Fortaleza = -03:00)
     const TZ_OFFSET = "-03:00";
 
-    /***********************
-     *  SUPABASE (SEUS DADOS)
-     ***********************/
     const SUPABASE_URL = "https://tvthaixgrzjotvhwsvvq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_R4lZfIm5Ghzg0IXjNvVI6g_arOCNy25";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Serviços com preço (para caixa)
     const SERVICES = [
       { name: "Corte de Cabelo", duration: 30, price: 35 },
       { name: "Barba",          duration: 30, price: 25 },
@@ -577,6 +580,7 @@
     const slotGrid = $("#slotGrid");
 
     const nameInput = $("#nameInput");
+    const priceInput = $("#priceInput");
     const summary = $("#summary");
     const submitBtn = $("#submitBtn");
 
@@ -585,19 +589,21 @@
 
     let selectedService = SERVICES[0].name;
 
-    // Ocupados: chave = barber|start_ts
     let occupiedSet = new Set();
-    // Info do ocupado (nome/service)
-    let occupiedInfo = new Map(); // key -> { customer_name, service }
+    let occupiedInfo = new Map();
 
     /***********************
-     * SALÃO (NOME INTERNO)
+     * SALÃO + PROFISSIONAIS (por login)
      ***********************/
     const salonNameInput = $("#salonNameInput");
+    const staffQuick = $("#staffQuick");
+    const staffDraftKey = "agendaPro:staffDraftQuick";
 
-    function salonKeyForUser(userId){
-      return `agendaPro:salonName:${userId}`;
-    }
+    let currentUser = null;
+
+    function salonKeyForUser(userId){ return `agendaPro:salonName:${userId}`; }
+    function staffKeyForUser(userId){ return `agendaPro:staff:${userId}`; }
+
     function getSalonName(){
       if(!currentUser) return "Salão";
       const v = localStorage.getItem(salonKeyForUser(currentUser.id));
@@ -608,8 +614,26 @@
       localStorage.setItem(salonKeyForUser(currentUser.id), (value||"").trim());
     }
 
+    function parseStaffQuick(text){
+      return (text||"")
+        .split(/[,\\n]/g)
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    function setStaff(list){
+      if(!currentUser) return;
+      localStorage.setItem(staffKeyForUser(currentUser.id), (list||[]).join("\\n"));
+    }
+    function getStaff(){
+      if(!currentUser) return ["Seu Zé","Tarcísio"];
+      const raw = localStorage.getItem(staffKeyForUser(currentUser.id)) || "";
+      const list = raw.split("\\n").map(s=>s.trim()).filter(Boolean);
+      return list.length ? list : ["Seu Zé","Tarcísio"];
+    }
+
     /***********************
-     * AUTH (ADMIN-ONLY)
+     * AUTH
      ***********************/
     const authModal = $("#authModal");
     const openAuthBtn = $("#openAuth");
@@ -622,19 +646,21 @@
     const btnLogout = $("#btnLogout");
     const authStatus = $("#authStatus");
 
-    let currentUser = null;
-
     function openAuthModal(){
       authModal.classList.add("is-open");
-      authModal.setAttribute("aria-hidden", "false");
-      // tenta carregar nome salvo (se já tiver user em sessão, vai ajustar depois)
+      authModal.setAttribute("aria-hidden","false");
+      const draft = localStorage.getItem(staffDraftKey);
+      if(draft && !staffQuick.value) staffQuick.value = draft;
+
       if(currentUser){
         salonNameInput.value = getSalonName();
+        const raw = localStorage.getItem(staffKeyForUser(currentUser.id)) || "";
+        staffQuick.value = raw ? raw.split("\\n").join(", ") : (staffQuick.value || "");
       }
     }
     function closeAuthModal(){
       authModal.classList.remove("is-open");
-      authModal.setAttribute("aria-hidden", "true");
+      authModal.setAttribute("aria-hidden","true");
     }
 
     function setAuthUI(){
@@ -656,14 +682,19 @@
         salonNameInput.value = getSalonName();
       }
       setAuthUI();
+      fillSelects();
     }
 
     openAuthBtn?.addEventListener("click", openAuthModal);
-    authModal?.addEventListener("click", (e) => {
-      if(e.target?.dataset?.authClose === "true") closeAuthModal();
+    authModal?.addEventListener("click", (e)=>{
+      if(e.target?.dataset?.authClose==="true") closeAuthModal();
     });
 
-    btnSignup?.addEventListener("click", async () => {
+    staffQuick?.addEventListener("input", ()=>{
+      localStorage.setItem(staffDraftKey, staffQuick.value || "");
+    });
+
+    btnSignup?.addEventListener("click", async ()=>{
       const email = authEmail.value.trim();
       const password = authPass.value.trim();
       if(!email || !password){ alert("Informe e-mail e senha."); return; }
@@ -672,17 +703,20 @@
       if(error){ alert(error.message); return; }
 
       currentUser = data?.user ?? null;
-
-      // salva nome do salão (se informou)
       if(currentUser){
         setSalonName(salonNameInput.value);
+
+        const list = parseStaffQuick(staffQuick.value || localStorage.getItem(staffDraftKey) || "");
+        if(list.length) setStaff(list);
+
+        fillSelects();
       }
 
       setAuthUI();
       alert("Conta criada! (Se exigir confirmação, verifique seu e-mail).");
     });
 
-    btnLogin?.addEventListener("click", async () => {
+    btnLogin?.addEventListener("click", async ()=>{
       const email = authEmail.value.trim();
       const password = authPass.value.trim();
       if(!email || !password){ alert("Informe e-mail e senha."); return; }
@@ -691,11 +725,13 @@
       if(error){ alert(error.message); return; }
 
       currentUser = data?.user ?? null;
-
-      // salva nome do salão para esse usuário
       if(currentUser){
         setSalonName(salonNameInput.value);
-        salonNameInput.value = getSalonName();
+
+        const list = parseStaffQuick(staffQuick.value || localStorage.getItem(staffDraftKey) || "");
+        if(list.length) setStaff(list);
+
+        fillSelects();
       }
 
       setAuthUI();
@@ -703,30 +739,41 @@
       closeAuthModal();
     });
 
-    btnLogout?.addEventListener("click", async () => {
+    btnLogout?.addEventListener("click", async ()=>{
       await sb.auth.signOut();
       currentUser = null;
       setAuthUI();
+      fillSelects();
       alert("Você saiu.");
     });
 
-    sb.auth.onAuthStateChange((_event, session) => {
+    sb.auth.onAuthStateChange((_e, session)=>{
       currentUser = session?.user ?? null;
       if(currentUser){
         salonNameInput.value = getSalonName();
       }
       setAuthUI();
+      fillSelects();
     });
 
-    // se o usuário editar o nome do salão, salva na hora (se estiver logado)
-    salonNameInput?.addEventListener("change", () => {
+    salonNameInput?.addEventListener("change", ()=>{
       if(!currentUser) return;
       setSalonName(salonNameInput.value);
       setAuthUI();
     });
 
+    staffQuick?.addEventListener("change", async ()=>{
+      if(!currentUser) return;
+      const list = parseStaffQuick(staffQuick.value);
+      if(list.length) setStaff(list);
+      fillSelects();
+      await refreshOccupied();
+      renderSlotGrid();
+      updateSummary();
+    });
+
     /***********************
-     * RELATÓRIO / CAIXA
+     * RELATÓRIO
      ***********************/
     const reportModal = $("#reportModal");
     const repStart = $("#repStart");
@@ -737,14 +784,14 @@
 
     function openReport(){
       reportModal.classList.add("is-open");
-      reportModal.setAttribute("aria-hidden", "false");
+      reportModal.setAttribute("aria-hidden","false");
     }
     function closeReport(){
       reportModal.classList.remove("is-open");
-      reportModal.setAttribute("aria-hidden", "true");
+      reportModal.setAttribute("aria-hidden","true");
     }
 
-    openReportBtn?.addEventListener("click", () => {
+    openReportBtn?.addEventListener("click", ()=>{
       if(!currentUser){
         alert("Faça login para ver o relatório.");
         openAuthModal();
@@ -757,25 +804,25 @@
       runReport();
     });
 
-    reportModal?.addEventListener("click", (e) => {
-      if(e.target?.dataset?.reportClose === "true") closeReport();
+    reportModal?.addEventListener("click",(e)=>{
+      if(e.target?.dataset?.reportClose==="true") closeReport();
     });
 
     btnRunReport?.addEventListener("click", runReport);
-    btnPrintReport?.addEventListener("click", () => window.print());
+    btnPrintReport?.addEventListener("click", ()=>window.print());
 
     function moneyBRL(cents){
-      const v = (cents || 0) / 100;
-      return v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+      const v = (cents||0)/100;
+      return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
     }
 
     /***********************
-     * FUNÇÕES BASE
+     * BASE
      ***********************/
     function buildTimeSlots(){
       const slots = [];
-      for(let h = OPEN_HOUR; h < CLOSE_HOUR; h++){
-        for(let m = 0; m < 60; m += SLOT_MINUTES){
+      for(let h=OPEN_HOUR; h<CLOSE_HOUR; h++){
+        for(let m=0; m<60; m+=SLOT_MINUTES){
           slots.push(`${pad2(h)}:${pad2(m)}`);
         }
       }
@@ -785,7 +832,7 @@
     function setMinDateToday(){
       const today = new Date();
       const yyyy = today.getFullYear();
-      const mm = pad2(today.getMonth() + 1);
+      const mm = pad2(today.getMonth()+1);
       const dd = pad2(today.getDate());
       const min = `${yyyy}-${mm}-${dd}`;
       dateInput.min = min;
@@ -793,21 +840,28 @@
     }
 
     function fillSelects(){
-      serviceSelect.innerHTML = SERVICES.map(s =>
-        `<option value="${s.name}">${s.name} — ${s.duration} min — R$ ${s.price}</option>`
-      ).join("");
+      serviceSelect.innerHTML = SERVICES.map(s=>{
+        return `<option value="${s.name}">${s.name} — ${s.duration} min</option>`;
+      }).join("");
 
-      barberSelect.innerHTML = BARBERS.map(b => `<option value="${b}">${b}</option>`).join("");
+      const staff = getStaff();
+      barberSelect.innerHTML = staff.map(b=>`<option value="${b}">${b}</option>`).join("");
 
       const slots = buildTimeSlots();
-      timeSelect.innerHTML = slots.map(t => `<option value="${t}">${t}</option>`).join("");
+      timeSelect.innerHTML = slots.map(t=>`<option value="${t}">${t}</option>`).join("");
 
       serviceSelect.value = selectedService;
+
+      // atualiza valor padrão do serviço na UI
+      const def = (SERVICES.find(x=>x.name===serviceSelect.value)?.price) ?? 0;
+      if(priceInput && (!priceInput.value || Number(priceInput.value) <= 0)){
+        priceInput.value = def;
+      }
     }
 
     function openModal(){
       modal.classList.add("is-open");
-      modal.setAttribute("aria-hidden", "false");
+      modal.setAttribute("aria-hidden","false");
       refreshOccupied().then(()=>{
         renderSlotGrid();
         updateSummary();
@@ -815,28 +869,36 @@
     }
     function closeModal(){
       modal.classList.remove("is-open");
-      modal.setAttribute("aria-hidden", "true");
+      modal.setAttribute("aria-hidden","true");
     }
 
     function setServiceFromCard(name){
       selectedService = name;
-      $$(".card").forEach(c => c.classList.toggle("is-selected", c.dataset.service === name));
+      $$(".card").forEach(c=>c.classList.toggle("is-selected", c.dataset.service===name));
       serviceSelect.value = name;
+
+      const def = (SERVICES.find(x=>x.name===name)?.price) ?? 0;
+      priceInput.value = def;
+
       updateSummary();
     }
 
     function toStartTs(dateStr, timeStr){
       const iso = `${dateStr}T${timeStr}:00${TZ_OFFSET}`;
-      const d = new Date(iso);
-      return d.getTime();
+      return new Date(iso).getTime();
     }
+    function key(barber, startTs){ return `${barber}|${startTs}`; }
 
-    function key(barber, startTs){
-      return `${barber}|${startTs}`;
+    function setCloudError(msg){
+      cloudState.textContent = "Nuvem: erro";
+      cloudState.title = msg || "";
+      // mostra também no hint pra ajudar
+      if(msg) timeHint.textContent = `⚠️ Nuvem: ${msg}`;
     }
 
     async function refreshOccupied(){
       cloudState.textContent = "Nuvem: carregando...";
+      cloudState.title = "";
       occupiedSet = new Set();
       occupiedInfo = new Map();
 
@@ -850,43 +912,48 @@
         const date = dateInput.value;
 
         const dayStart = toStartTs(date, "00:00");
-        const dayEnd = toStartTs(date, "23:59") + 60 * 1000;
+        const dayEnd = toStartTs(date, "23:59") + 60*1000;
 
-        // Agora buscamos também customer_name e service para mostrar no horário
-        const res = await sb
+        let res = await sb
           .from("appointments")
           .select("barber,start_ts,customer_name,service")
-          .eq("salon_id", currentUser.id)   // MULTI-SALÃO: cada user vê apenas o seu
+          .eq("salon_id", currentUser.id)
           .eq("barber", barber)
           .gte("start_ts", dayStart)
           .lt("start_ts", dayEnd);
 
+        if(res?.error){
+          res = await sb
+            .from("appointments")
+            .select('barber,start_ts,"custome name",service')
+            .eq("salon_id", currentUser.id)
+            .eq("barber", barber)
+            .gte("start_ts", dayStart)
+            .lt("start_ts", dayEnd);
+        }
+
         if(res?.error) throw res.error;
 
-        (res.data || []).forEach(r => {
+        (res.data || []).forEach(r=>{
           const k = key(r.barber, Number(r.start_ts));
           occupiedSet.add(k);
-          occupiedInfo.set(k, {
-            customer_name: (r.customer_name || "").toString(),
-            service: (r.service || "").toString()
-          });
+          const cname = (r.customer_name ?? r["custome name"] ?? "").toString();
+          occupiedInfo.set(k, { customer_name:cname, service:(r.service||"").toString() });
         });
 
         cloudState.textContent = "Nuvem: ok";
       }catch(e){
         console.log(e);
-        cloudState.textContent = "Nuvem: erro";
+        setCloudError(e?.message || "Falha de rede / permissão");
       }
     }
 
     function isDisabledSlot(barber, dateStr, timeStr){
-      const startTs = toStartTs(dateStr, timeStr);
-      return occupiedSet.has(key(barber, startTs));
+      return occupiedSet.has(key(barber, toStartTs(dateStr, timeStr)));
     }
 
     function getOccupiedLabel(barber, dateStr, timeStr){
-      const startTs = toStartTs(dateStr, timeStr);
-      const k = key(barber, startTs);
+      const k = key(barber, toStartTs(dateStr, timeStr));
       const info = occupiedInfo.get(k);
       if(!info) return null;
       const nome = info.customer_name || "Cliente";
@@ -895,8 +962,8 @@
 
     function updateSummary(){
       const service = serviceSelect.value;
-      const duration = (SERVICES.find(s => s.name === service)?.duration) ?? "";
-      const price = (SERVICES.find(s => s.name === service)?.price) ?? 0;
+      const duration = (SERVICES.find(s=>s.name===service)?.duration) ?? "";
+      const price = Number((priceInput.value || "").toString().replace(",", "."));
 
       const barber = barberSelect.value || "--";
       const date = dateInput.value || "--";
@@ -911,7 +978,8 @@
         timeHint.textContent = "✅ Horário disponível";
       }
 
-      summary.textContent = `Serviço: ${service} (${duration}min) • R$ ${price} • Profissional: ${barber} • ${date} às ${time}`;
+      const priceTxt = Number.isFinite(price) ? `R$ ${price}` : "R$ --";
+      summary.textContent = `Serviço: ${service} (${duration}min) • ${priceTxt} • Profissional: ${barber} • ${date} às ${time}`;
     }
 
     function renderSlotGrid(){
@@ -920,25 +988,19 @@
       const barber = barberSelect.value;
       const date = dateInput.value;
 
-      slotGrid.innerHTML = slots.map(t => {
+      slotGrid.innerHTML = slots.map(t=>{
         const disabled = isDisabledSlot(barber, date, t);
-        const active = t === current ? "is-active" : "";
+        const active = t===current ? "is-active" : "";
         const dis = disabled ? "is-disabled" : "";
         const aria = disabled ? `aria-disabled="true"` : "";
-
         const info = disabled ? getOccupiedLabel(barber, date, t) : null;
         const small = info ? `<small>${info.replace(/</g,"&lt;")}</small>` : "";
-
-        return `<div class="slot ${active} ${dis}" data-time="${t}" role="button" tabindex="0" ${aria}>
-          ${t}
-          ${small}
-        </div>`;
+        return `<div class="slot ${active} ${dis}" data-time="${t}" role="button" tabindex="0" ${aria}>${t}${small}</div>`;
       }).join("");
 
-      $$(".slot").forEach(el => {
-        el.addEventListener("click", () => {
+      $$(".slot").forEach(el=>{
+        el.addEventListener("click", ()=>{
           if(el.classList.contains("is-disabled")){
-            // ao tocar em ocupado, só mostra o nome no hint (não seleciona)
             const t = el.dataset.time;
             const lbl = getOccupiedLabel(barber, date, t);
             timeHint.textContent = `⛔ ${lbl || "Horário ocupado"}`;
@@ -948,18 +1010,16 @@
           renderSlotGrid();
           updateSummary();
         });
-
-        el.addEventListener("keydown", (e) => {
-          if(e.key === "Enter" || e.key === " "){
+        el.addEventListener("keydown",(e)=>{
+          if(e.key==="Enter" || e.key===" "){
             e.preventDefault();
             el.click();
           }
         });
       });
 
-      // Se o horário atual ficou ocupado, pula pro primeiro livre
       if(isDisabledSlot(barber, date, timeSelect.value)){
-        const firstFree = slots.find(t => !isDisabledSlot(barber, date, t));
+        const firstFree = slots.find(t=>!isDisabledSlot(barber, date, t));
         if(firstFree) timeSelect.value = firstFree;
       }
       updateSummary();
@@ -982,23 +1042,22 @@
       const startTs = toStartTs(start, "00:00");
       const endTs = toStartTs(end, "23:59") + 60*1000;
 
-      // Multi-salão: filtra por salon_id = currentUser.id
       let res = await sb
-  .from("appointments")
-  .select('start_ts,barber,service,price_cents,salon_id,customer_name,"custome name"')
-  .eq("salon_id", currentUser.id)
-  .gte("start_ts", startTs)
-  .lt("start_ts", endTs)
-  .order("start_ts", { ascending: true });
-      // fallback se não existir price_cents no select
+        .from("appointments")
+        .select("start_ts,barber,service,price_cents,customer_name")
+        .eq("salon_id", currentUser.id)
+        .gte("start_ts", startTs)
+        .lt("start_ts", endTs)
+        .order("start_ts", { ascending:true });
+
       if(res?.error){
         res = await sb
           .from("appointments")
-          .select("start_ts,barber,service,customer_name")
+          .select('start_ts,barber,service,price_cents,"custome name"')
           .eq("salon_id", currentUser.id)
           .gte("start_ts", startTs)
           .lt("start_ts", endTs)
-          .order("start_ts", { ascending: true });
+          .order("start_ts", { ascending:true });
       }
 
       if(res?.error){
@@ -1014,27 +1073,21 @@
       const byBarber = {};
       let totalCents = 0;
 
-      rows.forEach(r => {
-        byService[r.service] = (byService[r.service] || 0) + 1;
-        byBarber[r.barber] = (byBarber[r.barber] || 0) + 1;
+      rows.forEach(r=>{
+        byService[r.service] = (byService[r.service]||0)+1;
+        byBarber[r.barber] = (byBarber[r.barber]||0)+1;
 
-        if(typeof r.price_cents === "number"){
-          totalCents += r.price_cents;
-        } else {
-          const p = (SERVICES.find(s => s.name === r.service)?.price) ?? 0;
-          totalCents += Math.round(p * 100);
-        }
+        if(typeof r.price_cents === "number") totalCents += r.price_cents;
+        else totalCents += 0;
       });
 
-      const svcList = Object.entries(byService)
-        .sort((a,b)=>b[1]-a[1])
-        .map(([k,v]) => `<li><b>${k}</b>: ${v}</li>`).join("");
+      const svcList = Object.entries(byService).sort((a,b)=>b[1]-a[1])
+        .map(([k,v])=>`<li><b>${k}</b>: ${v}</li>`).join("");
 
-      const barbList = Object.entries(byBarber)
-        .sort((a,b)=>b[1]-a[1])
-        .map(([k,v]) => `<li><b>${k}</b>: ${v}</li>`).join("");
+      const barbList = Object.entries(byBarber).sort((a,b)=>b[1]-a[1])
+        .map(([k,v])=>`<li><b>${k}</b>: ${v}</li>`).join("");
 
-      const apptList = rows.map(r => {
+      const apptList = rows.map(r=>{
         const d = new Date(r.start_ts);
         const dd = String(d.getDate()).padStart(2,"0");
         const mm = String(d.getMonth()+1).padStart(2,"0");
@@ -1042,29 +1095,26 @@
         const hh = String(d.getHours()).padStart(2,"0");
         const mi = String(d.getMinutes()).padStart(2,"0");
 
-        const cents = (typeof r.price_cents === "number")
-          ? r.price_cents
-          : Math.round((((SERVICES.find(s => s.name === r.service)?.price) ?? 0) * 100));
+        const cents = (typeof r.price_cents==="number") ? r.price_cents : 0;
+        const customer = (r.customer_name ?? r["custome name"] ?? "").toString();
 
         return `<tr>
           <td>${dd}/${mm}/${yyyy} ${hh}:${mi}</td>
-          <td>${(r.customer_name || "").toString().replace(/</g,"&lt;")}</td>
+          <td>${customer.replace(/</g,"&lt;")}</td>
           <td>${r.service}</td>
           <td>${r.barber}</td>
           <td style="text-align:right">${moneyBRL(cents)}</td>
         </tr>`;
       }).join("");
 
-      const salonName = getSalonName();
-
       reportArea.innerHTML = `
         <div style="border:1px solid rgba(0,0,0,.12); border-radius:14px; padding:14px; background:#fff; color:#111">
-          <h2 style="margin:0 0 6px">Relatório / Caixa — ${salonName}</h2>
+          <h2 style="margin:0 0 6px">Relatório / Caixa — ${getSalonName()}</h2>
           <div style="margin:0 0 10px">Período: <b>${start}</b> até <b>${end}</b></div>
 
           <div style="display:flex; gap:14px; flex-wrap:wrap; margin:10px 0">
             <div><b>Total de clientes:</b> ${totalClients}</div>
-            <div><b>Faturamento estimado:</b> ${moneyBRL(totalCents)}</div>
+            <div><b>Faturamento (somatório dos valores lançados):</b> ${moneyBRL(totalCents)}</div>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:12px 0">
@@ -1098,10 +1148,10 @@
     }
 
     /***********************
-     * EVENTOS / UX
+     * EVENTOS
      ***********************/
-    $$(".card").forEach(card => {
-      card.addEventListener("click", () => {
+    $$(".card").forEach(card=>{
+      card.addEventListener("click", ()=>{
         setServiceFromCard(card.dataset.service);
         if(!currentUser){
           alert("Faça login do salão para registrar agendamentos.");
@@ -1112,7 +1162,7 @@
       });
     });
 
-    openBookingBtn.addEventListener("click", () => {
+    openBookingBtn.addEventListener("click", ()=>{
       if(!currentUser){
         alert("Faça login do salão para registrar agendamentos.");
         openAuthModal();
@@ -1121,20 +1171,24 @@
       openModal();
     });
 
-    modal.addEventListener("click", (e) => {
-      if(e.target?.dataset?.close === "true") closeModal();
+    modal.addEventListener("click",(e)=>{
+      if(e.target?.dataset?.close==="true") closeModal();
     });
 
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "Escape"){
+    document.addEventListener("keydown",(e)=>{
+      if(e.key==="Escape"){
         if(modal.classList.contains("is-open")) closeModal();
         if(authModal.classList.contains("is-open")) closeAuthModal();
         if(reportModal.classList.contains("is-open")) closeReport();
       }
     });
 
-    [serviceSelect, barberSelect, dateInput, timeSelect].forEach(el => {
-      el.addEventListener("change", async () => {
+    [serviceSelect, barberSelect, dateInput, timeSelect, priceInput].forEach(el=>{
+      el.addEventListener("change", async ()=>{
+        if(el === serviceSelect){
+          const def = (SERVICES.find(x=>x.name===serviceSelect.value)?.price) ?? 0;
+          if(!priceInput.value || Number(priceInput.value) <= 0) priceInput.value = def;
+        }
         if(el === barberSelect || el === dateInput){
           await refreshOccupied();
           renderSlotGrid();
@@ -1145,7 +1199,7 @@
       });
     });
 
-    bookingForm.addEventListener("submit", async (e) => {
+    bookingForm.addEventListener("submit", async (e)=>{
       e.preventDefault();
 
       if(!currentUser){
@@ -1155,11 +1209,16 @@
       }
 
       const customer = nameInput.value.trim();
-      if(!customer) { alert("Informe o nome do cliente."); return; }
+      if(!customer){ alert("Informe o nome do cliente."); return; }
 
       const service = serviceSelect.value;
-      const duration = (SERVICES.find(s => s.name === service)?.duration) ?? 30;
-      const price = (SERVICES.find(s => s.name === service)?.price) ?? 0;
+      const duration = (SERVICES.find(s=>s.name===service)?.duration) ?? 30;
+
+      const priceNum = Number((priceInput.value||"").toString().replace(",", "."));
+      if(!Number.isFinite(priceNum) || priceNum < 0){
+        alert("Informe um valor válido.");
+        return;
+      }
 
       const barber = barberSelect.value;
       const date = dateInput.value;
@@ -1180,14 +1239,13 @@
 
       try{
         await reserveSlotOrFail({
-          salon_id: currentUser.id,                 // MULTI-SALÃO
-          price_cents: Math.round(price * 100),
-
+          salon_id: currentUser.id,
           barber,
           service,
           duration_min: duration,
           start_ts: startTs,
-          customer_name: customer
+          customer_name: customer,
+          price_cents: Math.round(priceNum * 100) // ✅ preço gravado no agendamento
         });
 
         await refreshOccupied();
@@ -1197,7 +1255,7 @@
         closeModal();
       }catch(err){
         console.log(err);
-        alert("Não deu para registrar. Escolha outro horário.");
+        alert(err?.message ? `Não deu para registrar.\n${err.message}` : "Não deu para registrar. Escolha outro horário.");
         await refreshOccupied();
         renderSlotGrid();
       } finally {
