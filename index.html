@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Salão Brasil — Agende Online</title>
+  <title>Agenda Pro — Interno</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,16 +38,16 @@
 
     .hero{
       position:relative;
-      min-height:420px;
+      min-height:380px;
       display:flex;
       align-items:center;
       background:
-        url("https://images.unsplash.com/photo-1672257493563-0dac80e22b7d?auto=format&fit=crop&fm=jpg&q=60&w=1600")
+        url("https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&fm=jpg&q=60&w=1600")
         center/cover no-repeat;
     }
     .hero__overlay{
       position:absolute;inset:0;
-      background:linear-gradient(180deg, rgba(10,12,16,.55), rgba(10,12,16,.88));
+      background:linear-gradient(180deg, rgba(10,12,16,.55), rgba(10,12,16,.90));
     }
     .hero__content{position:relative;padding:34px 18px}
     .brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -66,12 +66,12 @@
     .hero h1{
       font-family:Cinzel, serif;
       margin:6px 0 10px;
-      font-size:42px;
+      font-size:40px;
       line-height:1.05;
       text-shadow:0 10px 30px rgba(0,0,0,.45);
       letter-spacing:.3px;
     }
-    .subtitle{margin:0 0 18px;color:var(--muted);max-width:560px}
+    .subtitle{margin:0 0 18px;color:var(--muted);max-width:620px}
 
     .steps{
       display:flex;flex-wrap:wrap;gap:10px;
@@ -133,10 +133,7 @@
       color: #ffd36a;
       text-shadow: 0 0 10px rgba(255, 211, 106, .35), 0 0 18px rgba(212, 160, 74, .28), 0 10px 22px rgba(0,0,0,.45);
     }
-    .card__meta{
-      color: rgba(255, 223, 147, .92);
-      font-weight:600
-    }
+    .card__meta{color: rgba(255, 223, 147, .92);font-weight:600}
 
     .cta{
       margin:26px 0 18px;
@@ -187,13 +184,11 @@
     }
     .footer__grid{
       display:grid;
-      grid-template-columns:1.4fr 1fr 1fr;
-      gap:12px;
+      grid-template-columns:1fr;
+      gap:10px;
       color:var(--muted);
       font-weight:600;
     }
-    .footer__link{color:var(--muted);text-decoration:none}
-    .footer__link:hover{color:var(--text)}
     .footer__actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
 
     .modal{position:fixed;inset:0;display:none}
@@ -292,6 +287,15 @@
       font-weight:800;
       text-align:center;
       user-select:none;
+      line-height:1.1;
+    }
+    .slot small{
+      display:block;
+      margin-top:6px;
+      font-weight:700;
+      opacity:.85;
+      font-size:11px;
+      color:rgba(255,255,255,.92);
     }
     .slot:hover{border-color:rgba(255, 211, 106, .55)}
     .slot.is-active{
@@ -300,7 +304,7 @@
       box-shadow: 0 0 0 1px rgba(255, 211, 106, .20);
     }
     .slot.is-disabled{
-      opacity:.45;
+      opacity:.55;
       cursor:not-allowed;
       text-decoration:line-through;
     }
@@ -308,7 +312,6 @@
     @media (max-width: 900px){
       .grid{grid-template-columns:repeat(2,1fr)}
       .hero h1{font-size:34px}
-      .footer__grid{grid-template-columns:1fr}
       .slots{grid-template-columns:repeat(4, minmax(0, 1fr))}
     }
     @media (max-width: 520px){
@@ -333,19 +336,19 @@
     <div class="container hero__content">
       <div class="brand">
         <div class="brand__mark">✂︎</div>
-        <div class="brand__name">Salão <span>Brasil</span></div>
+        <div class="brand__name">Agenda <span>Pro</span></div>
       </div>
 
-      <h1>Agende seu Horário Online</h1>
+      <h1>Controle Interno de Agendamentos & Caixa</h1>
       <p class="subtitle">
-        Versão admin: apenas o salão cria agendamentos. Faça login para liberar o botão de agendar e o relatório de caixa.
+        Multi-salão: cada salão faz login e registra seus próprios agendamentos. Horários ocupados mostram o nome do cliente.
       </p>
 
       <div class="steps" role="list" aria-label="Etapas do agendamento">
         <div class="step" role="listitem"><span class="step__num">1</span> Login do Salão</div>
-        <div class="step" role="listitem"><span class="step__num">2</span> Escolha o Serviço</div>
-        <div class="step" role="listitem"><span class="step__num">3</span> Data e Hora</div>
-        <div class="step" role="listitem"><span class="step__num">4</span> Confirme no WhatsApp</div>
+        <div class="step" role="listitem"><span class="step__num">2</span> Registrar Agendamento</div>
+        <div class="step" role="listitem"><span class="step__num">3</span> Ver Grade do Dia</div>
+        <div class="step" role="listitem"><span class="step__num">4</span> Relatório / Caixa</div>
       </div>
     </div>
   </header>
@@ -353,7 +356,7 @@
   <main class="container">
     <section class="services">
       <h2>Serviços</h2>
-      <p class="muted">Toque em um serviço para começar (login necessário para agendar).</p>
+      <p class="muted">Toque em um serviço para registrar (login necessário).</p>
 
       <div class="grid">
         <button class="card" data-service="Corte de Cabelo" data-duration="30" type="button">
@@ -378,8 +381,8 @@
       </div>
 
       <div class="cta">
-        <p class="cta__text">Garanta já o seu horário!</p>
-        <button id="openBooking" class="btn btn--gold" type="button">Agendar Agora</button>
+        <p class="cta__text">Registre um novo horário para o salão logado.</p>
+        <button id="openBooking" class="btn btn--gold" type="button">Agendar</button>
       </div>
     </section>
   </main>
@@ -387,9 +390,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer__grid">
-        <div class="footer__item">📍 Próximo ao Hotel Pérola</div>
-        <div class="footer__item">🕘 Seg - Sáb | 08:00 - 20:00</div>
-        <a class="footer__item footer__link" id="waLink" href="#" target="_blank" rel="noreferrer">💬 WhatsApp: (99) 99136-0547</a>
+        <div class="footer__item">🔒 Uso interno — cada salão acessa com seu login</div>
       </div>
 
       <div class="footer__actions">
@@ -405,13 +406,13 @@
 
     <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal__head">
-        <h3 id="modalTitle">Agendamento — Salão Brasil</h3>
+        <h3 id="modalTitle">Agendamento — Interno</h3>
         <button class="icon-btn" data-close="true" aria-label="Fechar">✕</button>
       </div>
 
       <form id="bookingForm" class="form">
         <div class="info">
-          <div>🔒 Horários ocupados ficam indisponíveis</div>
+          <div>📅 Horários ocupados mostram o cliente (somente leitura)</div>
           <div class="badge" id="cloudState">Nuvem: --</div>
         </div>
 
@@ -422,7 +423,7 @@
         </div>
 
         <div class="row">
-          <label>Barbeiro</label>
+          <label>Profissional</label>
           <select id="barberSelect" required></select>
         </div>
 
@@ -439,7 +440,7 @@
         </div>
 
         <div class="row">
-          <label>Seleção rápida de horários</label>
+          <label>Grade do dia (toque para escolher)</label>
           <div id="slotGrid" class="slots" aria-label="Horários disponíveis"></div>
         </div>
 
@@ -448,16 +449,11 @@
           <input id="nameInput" type="text" placeholder="Ex.: Tiago" required />
         </div>
 
-        <div class="row">
-          <label>Telefone (opcional)</label>
-          <input id="phoneInput" type="tel" placeholder="(99) 9xxxx-xxxx" />
-        </div>
-
         <div class="summary" id="summary"></div>
 
         <div class="actions">
           <button type="button" class="btn" data-close="true">Cancelar</button>
-          <button type="submit" class="btn btn--gold" id="submitBtn">Reservar e confirmar no WhatsApp</button>
+          <button type="submit" class="btn btn--gold" id="submitBtn">Registrar</button>
         </div>
       </form>
     </div>
@@ -474,6 +470,12 @@
       </div>
 
       <div class="form">
+        <div class="row">
+          <label>Nome do salão (interno)</label>
+          <input id="salonNameInput" type="text" placeholder="Ex.: Barbearia Centro" />
+          <div class="hint">Fica salvo neste dispositivo para o usuário logado.</div>
+        </div>
+
         <div class="row">
           <label>E-mail</label>
           <input id="authEmail" type="email" placeholder="seuemail@dominio.com" autocomplete="email" />
@@ -535,19 +537,12 @@
 
   <script>
     /***********************
-     *  CONFIG (AJUSTE AQUI)
+     *  CONFIG
      ***********************/
-    const SHOP_NAME = "Salão Brasil";
-    const BARBERS = ["Seu Zé", "Tarcísio"];
-
-    // Horário de funcionamento
-    const OPEN_HOUR = 8;     // 08:00
-    const CLOSE_HOUR = 20;   // 20:00 (último slot começa 19:30)
+    const BARBERS = ["Seu Zé", "Tarcísio"]; // profissionais
+    const OPEN_HOUR = 8;
+    const CLOSE_HOUR = 20;   // último slot começa 19:30
     const SLOT_MINUTES = 30;
-
-    // WhatsApp (E.164 sem "+")
-    const WHATSAPP_E164 = "5599991360547";
-    const DISPLAY_WHATSAPP = "(99) 99136-0547";
 
     // Timezone fixa (Fortaleza = -03:00)
     const TZ_OFFSET = "-03:00";
@@ -559,8 +554,7 @@
     const SUPABASE_ANON_KEY = "sb_publishable_R4lZfIm5Ghzg0IXjNvVI6g_arOCNy25";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Serviços agora com preço (para caixa)
-    // Você pode mudar os valores aqui.
+    // Serviços com preço (para caixa)
     const SERVICES = [
       { name: "Corte de Cabelo", duration: 30, price: 35 },
       { name: "Barba",          duration: 30, price: 25 },
@@ -583,21 +577,36 @@
     const slotGrid = $("#slotGrid");
 
     const nameInput = $("#nameInput");
-    const phoneInput = $("#phoneInput");
     const summary = $("#summary");
     const submitBtn = $("#submitBtn");
-
-    const waLink = $("#waLink");
-    waLink.textContent = `💬 WhatsApp: ${DISPLAY_WHATSAPP}`;
-    waLink.href = `https://wa.me/${WHATSAPP_E164}`;
 
     const cloudState = $("#cloudState");
     const timeHint = $("#timeHint");
 
     let selectedService = SERVICES[0].name;
 
-    // Cache de horários ocupados (para data + barbeiro)
-    let occupiedSet = new Set(); // chave = barber|start_ts
+    // Ocupados: chave = barber|start_ts
+    let occupiedSet = new Set();
+    // Info do ocupado (nome/service)
+    let occupiedInfo = new Map(); // key -> { customer_name, service }
+
+    /***********************
+     * SALÃO (NOME INTERNO)
+     ***********************/
+    const salonNameInput = $("#salonNameInput");
+
+    function salonKeyForUser(userId){
+      return `agendaPro:salonName:${userId}`;
+    }
+    function getSalonName(){
+      if(!currentUser) return "Salão";
+      const v = localStorage.getItem(salonKeyForUser(currentUser.id));
+      return (v && v.trim()) ? v.trim() : "Salão";
+    }
+    function setSalonName(value){
+      if(!currentUser) return;
+      localStorage.setItem(salonKeyForUser(currentUser.id), (value||"").trim());
+    }
 
     /***********************
      * AUTH (ADMIN-ONLY)
@@ -618,6 +627,10 @@
     function openAuthModal(){
       authModal.classList.add("is-open");
       authModal.setAttribute("aria-hidden", "false");
+      // tenta carregar nome salvo (se já tiver user em sessão, vai ajustar depois)
+      if(currentUser){
+        salonNameInput.value = getSalonName();
+      }
     }
     function closeAuthModal(){
       authModal.classList.remove("is-open");
@@ -626,7 +639,7 @@
 
     function setAuthUI(){
       if(currentUser){
-        authStatus.textContent = `Logado: ${currentUser.email}`;
+        authStatus.textContent = `Logado: ${currentUser.email} • ${getSalonName()}`;
         btnLogout.style.display = "inline-block";
         openReportBtn.style.display = "inline-block";
       } else {
@@ -639,6 +652,9 @@
     async function loadSession(){
       const { data } = await sb.auth.getSession();
       currentUser = data?.session?.user ?? null;
+      if(currentUser){
+        salonNameInput.value = getSalonName();
+      }
       setAuthUI();
     }
 
@@ -656,6 +672,12 @@
       if(error){ alert(error.message); return; }
 
       currentUser = data?.user ?? null;
+
+      // salva nome do salão (se informou)
+      if(currentUser){
+        setSalonName(salonNameInput.value);
+      }
+
       setAuthUI();
       alert("Conta criada! (Se exigir confirmação, verifique seu e-mail).");
     });
@@ -669,6 +691,13 @@
       if(error){ alert(error.message); return; }
 
       currentUser = data?.user ?? null;
+
+      // salva nome do salão para esse usuário
+      if(currentUser){
+        setSalonName(salonNameInput.value);
+        salonNameInput.value = getSalonName();
+      }
+
       setAuthUI();
       alert("Logado ✅");
       closeAuthModal();
@@ -683,6 +712,16 @@
 
     sb.auth.onAuthStateChange((_event, session) => {
       currentUser = session?.user ?? null;
+      if(currentUser){
+        salonNameInput.value = getSalonName();
+      }
+      setAuthUI();
+    });
+
+    // se o usuário editar o nome do salão, salva na hora (se estiver logado)
+    salonNameInput?.addEventListener("change", () => {
+      if(!currentUser) return;
+      setSalonName(salonNameInput.value);
       setAuthUI();
     });
 
@@ -740,10 +779,7 @@
           slots.push(`${pad2(h)}:${pad2(m)}`);
         }
       }
-      return slots.filter(t => {
-        const [hh, mm] = t.split(":").map(Number);
-        return (hh < CLOSE_HOUR) && !(hh === CLOSE_HOUR && mm > 0);
-      });
+      return slots;
     }
 
     function setMinDateToday(){
@@ -802,6 +838,8 @@
     async function refreshOccupied(){
       cloudState.textContent = "Nuvem: carregando...";
       occupiedSet = new Set();
+      occupiedInfo = new Map();
+
       try{
         if(!currentUser){
           cloudState.textContent = "Nuvem: faça login";
@@ -814,27 +852,26 @@
         const dayStart = toStartTs(date, "00:00");
         const dayEnd = toStartTs(date, "23:59") + 60 * 1000;
 
-        // 1) tenta buscar direto da appointments (ideal para RLS por salão)
-        let res = await sb
+        // Agora buscamos também customer_name e service para mostrar no horário
+        const res = await sb
           .from("appointments")
-          .select("barber,start_ts")
+          .select("barber,start_ts,customer_name,service")
+          .eq("salon_id", currentUser.id)   // MULTI-SALÃO: cada user vê apenas o seu
           .eq("barber", barber)
           .gte("start_ts", dayStart)
           .lt("start_ts", dayEnd);
 
-        // 2) fallback: se não funcionar, tenta booked_slots (se você ainda usa a view pública)
-        if(res?.error){
-          res = await sb
-            .from("booked_slots")
-            .select("barber,start_ts")
-            .eq("barber", barber)
-            .gte("start_ts", dayStart)
-            .lt("start_ts", dayEnd);
-        }
-
         if(res?.error) throw res.error;
 
-        (res.data || []).forEach(r => occupiedSet.add(key(r.barber, Number(r.start_ts))));
+        (res.data || []).forEach(r => {
+          const k = key(r.barber, Number(r.start_ts));
+          occupiedSet.add(k);
+          occupiedInfo.set(k, {
+            customer_name: (r.customer_name || "").toString(),
+            service: (r.service || "").toString()
+          });
+        });
+
         cloudState.textContent = "Nuvem: ok";
       }catch(e){
         console.log(e);
@@ -847,6 +884,15 @@
       return occupiedSet.has(key(barber, startTs));
     }
 
+    function getOccupiedLabel(barber, dateStr, timeStr){
+      const startTs = toStartTs(dateStr, timeStr);
+      const k = key(barber, startTs);
+      const info = occupiedInfo.get(k);
+      if(!info) return null;
+      const nome = info.customer_name || "Cliente";
+      return `Ocupado — ${nome}`;
+    }
+
     function updateSummary(){
       const service = serviceSelect.value;
       const duration = (SERVICES.find(s => s.name === service)?.duration) ?? "";
@@ -857,9 +903,15 @@
       const time = timeSelect.value || "--";
 
       const disabled = (date !== "--" && time !== "--") ? isDisabledSlot(barber, date, time) : false;
-      timeHint.textContent = disabled ? "⚠️ Esse horário está ocupado" : "✅ Horário disponível";
 
-      summary.textContent = `Serviço: ${service} (${duration}min) • R$ ${price} • Barbeiro: ${barber} • ${date} às ${time}`;
+      if(disabled){
+        const lbl = getOccupiedLabel(barber, date, time);
+        timeHint.textContent = `⛔ ${lbl || "Horário ocupado"}`;
+      } else {
+        timeHint.textContent = "✅ Horário disponível";
+      }
+
+      summary.textContent = `Serviço: ${service} (${duration}min) • R$ ${price} • Profissional: ${barber} • ${date} às ${time}`;
     }
 
     function renderSlotGrid(){
@@ -873,27 +925,39 @@
         const active = t === current ? "is-active" : "";
         const dis = disabled ? "is-disabled" : "";
         const aria = disabled ? `aria-disabled="true"` : "";
-        return `<div class="slot ${active} ${dis}" data-time="${t}" role="button" tabindex="0" ${aria}>${t}</div>`;
+
+        const info = disabled ? getOccupiedLabel(barber, date, t) : null;
+        const small = info ? `<small>${info.replace(/</g,"&lt;")}</small>` : "";
+
+        return `<div class="slot ${active} ${dis}" data-time="${t}" role="button" tabindex="0" ${aria}>
+          ${t}
+          ${small}
+        </div>`;
       }).join("");
 
       $$(".slot").forEach(el => {
         el.addEventListener("click", () => {
-          if(el.classList.contains("is-disabled")) return;
+          if(el.classList.contains("is-disabled")){
+            // ao tocar em ocupado, só mostra o nome no hint (não seleciona)
+            const t = el.dataset.time;
+            const lbl = getOccupiedLabel(barber, date, t);
+            timeHint.textContent = `⛔ ${lbl || "Horário ocupado"}`;
+            return;
+          }
           timeSelect.value = el.dataset.time;
           renderSlotGrid();
           updateSummary();
         });
+
         el.addEventListener("keydown", (e) => {
           if(e.key === "Enter" || e.key === " "){
             e.preventDefault();
-            if(el.classList.contains("is-disabled")) return;
-            timeSelect.value = el.dataset.time;
-            renderSlotGrid();
-            updateSummary();
+            el.click();
           }
         });
       });
 
+      // Se o horário atual ficou ocupado, pula pro primeiro livre
       if(isDisabledSlot(barber, date, timeSelect.value)){
         const firstFree = slots.find(t => !isDisabledSlot(barber, date, t));
         if(firstFree) timeSelect.value = firstFree;
@@ -902,28 +966,8 @@
     }
 
     async function reserveSlotOrFail(payload){
-      // tenta inserir com campos extras (salon_id, price_cents); se sua tabela ainda não tiver, faz fallback
-      let { error } = await sb.from("appointments").insert(payload);
-
-      if(error){
-        const msg = (error.message || "").toLowerCase();
-        const code = (error.code || "").toString();
-
-        // fallback: remove campos que talvez não existam ainda
-        const fallbackPayload = { ...payload };
-        delete fallbackPayload.salon_id;
-        delete fallbackPayload.price_cents;
-
-        // tenta novamente se suspeitar que o erro é por coluna inexistente
-        if(msg.includes("column") || msg.includes("salon_id") || msg.includes("price_cents")){
-          const res2 = await sb.from("appointments").insert(fallbackPayload);
-          if(res2.error) throw res2.error;
-          return true;
-        }
-
-        // conflito unique (23505) ou outros
-        throw error;
-      }
+      const { error } = await sb.from("appointments").insert(payload);
+      if(error) throw error;
       return true;
     }
 
@@ -938,18 +982,21 @@
       const startTs = toStartTs(start, "00:00");
       const endTs = toStartTs(end, "23:59") + 60*1000;
 
-      // tenta pegar price_cents (se existir), senão calcula pelo serviço
-      let res = await sb
-        .from("appointments")
-        .select("start_ts,barber,service,price_cents,customer_name")
-        .gte("start_ts", startTs)
-        .lt("start_ts", endTs)
-        .order("start_ts", { ascending: true });
+      // Multi-salão: filtra por salon_id = currentUser.id
+      const res = await sb
+  .from("appointments")
+  .select("barber,start_ts,customer_name,service")
+  .eq("salon_id", currentUser.id)
+  .eq("barber", barber)
+  .gte("start_ts", dayStart)
+  .lt("start_ts", dayEnd);
 
+      // fallback se não existir price_cents no select
       if(res?.error){
         res = await sb
           .from("appointments")
           .select("start_ts,barber,service,customer_name")
+          .eq("salon_id", currentUser.id)
           .gte("start_ts", startTs)
           .lt("start_ts", endTs)
           .order("start_ts", { ascending: true });
@@ -1009,9 +1056,11 @@
         </tr>`;
       }).join("");
 
+      const salonName = getSalonName();
+
       reportArea.innerHTML = `
         <div style="border:1px solid rgba(0,0,0,.12); border-radius:14px; padding:14px; background:#fff; color:#111">
-          <h2 style="margin:0 0 6px">Relatório / Caixa — ${SHOP_NAME}</h2>
+          <h2 style="margin:0 0 6px">Relatório / Caixa — ${salonName}</h2>
           <div style="margin:0 0 10px">Período: <b>${start}</b> até <b>${end}</b></div>
 
           <div style="display:flex; gap:14px; flex-wrap:wrap; margin:10px 0">
@@ -1025,7 +1074,7 @@
               <ul style="margin:0; padding-left:18px">${svcList || "<li>—</li>"}</ul>
             </div>
             <div>
-              <h3 style="margin:0 0 6px">Por barbeiro</h3>
+              <h3 style="margin:0 0 6px">Por profissional</h3>
               <ul style="margin:0; padding-left:18px">${barbList || "<li>—</li>"}</ul>
             </div>
           </div>
@@ -1034,7 +1083,7 @@
           <table style="width:100%; border-collapse:collapse" border="1" cellspacing="0" cellpadding="6">
             <thead>
               <tr>
-                <th>Data/Hora</th><th>Cliente</th><th>Serviço</th><th>Barbeiro</th><th>Valor</th>
+                <th>Data/Hora</th><th>Cliente</th><th>Serviço</th><th>Profissional</th><th>Valor</th>
               </tr>
             </thead>
             <tbody>
@@ -1056,7 +1105,7 @@
       card.addEventListener("click", () => {
         setServiceFromCard(card.dataset.service);
         if(!currentUser){
-          alert("Faça login do salão para agendar (admin).");
+          alert("Faça login do salão para registrar agendamentos.");
           openAuthModal();
           return;
         }
@@ -1066,7 +1115,7 @@
 
     openBookingBtn.addEventListener("click", () => {
       if(!currentUser){
-        alert("Faça login do salão para agendar (admin).");
+        alert("Faça login do salão para registrar agendamentos.");
         openAuthModal();
         return;
       }
@@ -1109,7 +1158,6 @@
       const customer = nameInput.value.trim();
       if(!customer) { alert("Informe o nome do cliente."); return; }
 
-      const phone = phoneInput.value.trim();
       const service = serviceSelect.value;
       const duration = (SERVICES.find(s => s.name === service)?.duration) ?? 30;
       const price = (SERVICES.find(s => s.name === service)?.price) ?? 0;
@@ -1119,7 +1167,8 @@
       const time = timeSelect.value;
 
       if(isDisabledSlot(barber, date, time)){
-        alert("Esse horário já foi reservado. Escolha outro.");
+        const lbl = getOccupiedLabel(barber, date, time);
+        alert(lbl ? `Esse horário já está ocupado.\n${lbl}` : "Esse horário já foi reservado. Escolha outro.");
         await refreshOccupied();
         renderSlotGrid();
         return;
@@ -1128,47 +1177,33 @@
       const startTs = toStartTs(date, time);
 
       submitBtn.disabled = true;
-      submitBtn.textContent = "Reservando...";
+      submitBtn.textContent = "Registrando...";
 
       try{
         await reserveSlotOrFail({
-          // estes 2 campos vão funcionar quando você criar no Supabase;
-          // se ainda não existirem, o código faz fallback automaticamente.
-          salon_id: currentUser.id,
+          salon_id: currentUser.id,                 // MULTI-SALÃO
           price_cents: Math.round(price * 100),
 
           barber,
           service,
           duration_min: duration,
           start_ts: startTs,
-          customer_name: customer,
-          customer_phone: phone || null
+          customer_name: customer
         });
 
         await refreshOccupied();
         renderSlotGrid();
 
-        const msg =
-`Olá! Quero agendar no ${SHOP_NAME} (pagamento presencial).
-• Cliente: ${customer}
-• Serviço: ${service} (${duration} min) — R$ ${price}
-• Barbeiro: ${barber}
-• Data/Hora: ${date} às ${time}
-${phone ? `• Telefone: ${phone}` : ""}`.trim();
-
-        const url = `https://wa.me/${WHATSAPP_E164}?text=${encodeURIComponent(msg)}`;
-        window.open(url, "_blank", "noreferrer");
-
-        alert("Horário reservado ✅ Agora confirme no WhatsApp.");
+        alert("Agendamento registrado ✅");
         closeModal();
       }catch(err){
         console.log(err);
-        alert("Não deu para reservar (talvez alguém pegou esse horário agora). Escolha outro.");
+        alert("Não deu para registrar. Escolha outro horário.");
         await refreshOccupied();
         renderSlotGrid();
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "Reservar e confirmar no WhatsApp";
+        submitBtn.textContent = "Registrar";
       }
     });
 
